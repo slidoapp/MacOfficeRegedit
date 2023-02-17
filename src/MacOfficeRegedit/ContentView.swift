@@ -1,18 +1,24 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedKey: RegistryKey?
+    @StateObject var contentModel: ContentModel
     @State private var selectedValue: RegistryValue.ID?
-    var reader: Reader
+    @State private var currentPath: String = ""
     
     var body: some View {
-        NavigationSplitView {
-            List(self.reader.fetchKeys(), id: \.self, children: \.children, selection: $selectedKey) { item in
-                Text(item.name)
-            }
-        } detail: {
-            if let selectedKey {
-                Table(self.reader.fetchValues(nodeId: selectedKey.id), selection: $selectedValue) {
+        VStack {
+            TextField("Path", text: $contentModel.currentPath)
+            NavigationSplitView {
+                List(self.contentModel.allKeys, id: \.self, children: \.children, selection: $contentModel.selectedKey) { item in
+                    HStack {
+                        Image(nsImage: NSImage(named: NSImage.folderName) ?? NSImage())
+                            .resizable()
+                            .frame(width: 16, height: 16)
+                        Text(item.name).help(item.path)
+                    }
+                }
+            } detail: {
+                Table(self.contentModel.values, selection: $selectedValue) {
                     TableColumn("Name", value: \.name)
                     TableColumn("Type", value: \.typeString)
                     TableColumn("Data", value: \.dataString)
@@ -24,6 +30,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(reader: Reader())
+        ContentView(contentModel: ContentModel(isPreview: true))
     }
 }

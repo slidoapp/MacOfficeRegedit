@@ -2,11 +2,11 @@ import SwiftUI
 
 @main
 struct MacOfficeRegeditApp: App {
-    let reader = Reader()
+    let contentModel = ContentModel()
 
     var body: some Scene {
         WindowGroup {
-            ContentView(reader: reader)
+            ContentView(contentModel: contentModel)
         }
     }
 }

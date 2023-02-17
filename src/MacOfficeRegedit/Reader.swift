@@ -9,25 +9,33 @@ class Reader {
 
     var dbConnection: Connection?
     
-    init() {
+    func connect() {
         do {
-            //self.dbConnection = try Connection(self.regDbFile.absoluteString)
-            self.dbConnection = try Connection("/Users/dpalo/Library/Group Containers/UBF8T346G9.Office/MicrosoftRegistrationDB.reg")
+            self.dbConnection = try Connection(self.regDbFile.absoluteString)
         } catch {
             print("ERROR: \(error)")
         }
     }
     
-    func fetchKeys(parentId: Int64 = -1) -> [RegistryKey] {
+    func fetchKeys(parentId: Int64 = -1, path: String = "Computer\\HKEY_CURRENT_USER") -> [RegistryKey] {
         var items = [RegistryKey]()
+        guard let db = self.dbConnection else {
+            // log error
+            return items
+        }
+        
         let query = Tables.hkcuKeys.filter(HkcuKeysCols.parentId == parentId)
 
         do {
-            for row in try self.dbConnection!.prepare(query) {
+            for row in try db.prepare(query) {
+                let path = "\(path)\\\(row[HkcuKeysCols.name])"
+                let children = self.fetchKeys(parentId: row[HkcuKeysCols.nodeId], path: path)
+                
                 items.append(RegistryKey(
                     id: row[HkcuKeysCols.nodeId],
                     name: row[HkcuKeysCols.name],
-                    children: self.fetchKeys(parentId: row[HkcuKeysCols.nodeId])
+                    path: path,
+                    children: children
                 ))
             }
         }
@@ -41,10 +49,15 @@ class Reader {
     
     func fetchValues(nodeId: Int64) -> [RegistryValue] {
         var items = [RegistryValue]()
+        guard let db = self.dbConnection else {
+            // log error
+            return items
+        }
+
         let query = Tables.hkcuValues.filter(HkcuValuesCols.nodeId == nodeId)
         
         do {
-            for row in try self.dbConnection!.prepare(query) {
+            for row in try db.prepare(query) {
                 items.append(RegistryValue(
                     id: "\(nodeId)/\(row[HkcuValuesCols.name])",
                     name: row[HkcuValuesCols.name],

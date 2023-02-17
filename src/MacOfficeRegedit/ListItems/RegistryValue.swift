@@ -1,10 +1,10 @@
 import Foundation
 
 struct RegistryValue: Identifiable {
-    var id: String // node_id+name
-    var name: String
-    var type: RegistryValueType?
-    var data: String?
+    let id: String // node_id+name
+    let name: String
+    let type: RegistryValueType?
+    let data: String?
 
     var typeString: String {
         return "\(self.type!)"

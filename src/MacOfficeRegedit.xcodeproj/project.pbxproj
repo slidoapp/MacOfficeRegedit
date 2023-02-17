@@ -18,6 +18,7 @@
 		87E5BA77299FB723003E26A7 /* RegistryValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA76299FB723003E26A7 /* RegistryValue.swift */; };
 		87E5BA79299FB774003E26A7 /* Reader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA78299FB774003E26A7 /* Reader.swift */; };
 		87E5BA7C299FB7D7003E26A7 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 87E5BA7B299FB7D7003E26A7 /* SQLite */; };
+		87E5BA7E299FD48B003E26A7 /* ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA7D299FD48B003E26A7 /* ContentModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		87E5BA74299FB712003E26A7 /* RegistryKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKey.swift; sourceTree = "<group>"; };
 		87E5BA76299FB723003E26A7 /* RegistryValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValue.swift; sourceTree = "<group>"; };
 		87E5BA78299FB774003E26A7 /* Reader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reader.swift; sourceTree = "<group>"; };
+		87E5BA7D299FD48B003E26A7 /* ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 			children = (
 				87E5BA73299FB6FA003E26A7 /* ListItems */,
 				8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */,
+				87E5BA7D299FD48B003E26A7 /* ContentModel.swift */,
 				8794D859299FB66D00BCF0FC /* ContentView.swift */,
 				8794D85B299FB66E00BCF0FC /* Assets.xcassets */,
 				8794D860299FB66E00BCF0FC /* MacOfficeRegedit.entitlements */,
@@ -289,6 +292,7 @@
 				87E5BA79299FB774003E26A7 /* Reader.swift in Sources */,
 				87E5BA75299FB712003E26A7 /* RegistryKey.swift in Sources */,
 				8794D858299FB66D00BCF0FC /* MacOfficeRegeditApp.swift in Sources */,
+				87E5BA7E299FD48B003E26A7 /* ContentModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
