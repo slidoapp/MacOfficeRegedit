@@ -1,16 +1,23 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selection: RegistryKey?
+    @State private var selectedKey: RegistryKey?
+    @State private var selectedValue: RegistryValue.ID?
     var reader: Reader
     
     var body: some View {
         NavigationSplitView {
-            List(self.reader.fetchKeys(), id: \.self, children: \.children, selection: $selection) { item in
+            List(self.reader.fetchKeys(), id: \.self, children: \.children, selection: $selectedKey) { item in
                 Text(item.name)
             }
         } detail: {
-            Text("Detail")
+            if let selectedKey {
+                Table(self.reader.fetchValues(nodeId: selectedKey.id), selection: $selectedValue) {
+                    TableColumn("Name", value: \.name)
+                    TableColumn("Type", value: \.typeString)
+                    TableColumn("Data", value: \.dataString)
+                }
+            }
         }
     }
 }

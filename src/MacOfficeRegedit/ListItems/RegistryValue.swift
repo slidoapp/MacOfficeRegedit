@@ -4,7 +4,15 @@ struct RegistryValue: Identifiable {
     var id: String // node_id+name
     var name: String
     var type: RegistryValueType?
+    var data: String?
+
+    var typeString: String {
+        return "\(self.type!)"
+    }
     
+    var dataString: String {
+        return "\(self.data ?? "")"
+    }
 }
 
 enum RegistryValueType: Int64 {

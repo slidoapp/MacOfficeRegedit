@@ -48,7 +48,8 @@ class Reader {
                 items.append(RegistryValue(
                     id: "\(nodeId)/\(row[HkcuValuesCols.name])",
                     name: row[HkcuValuesCols.name],
-                    type: RegistryValueType(rawValue: row[HkcuValuesCols.type])
+                    type: RegistryValueType(rawValue: row[HkcuValuesCols.type]),
+                    data: row[HkcuValuesCols.value]
                 ))
             }
         }
@@ -77,5 +78,5 @@ struct HkcuValuesCols {
     static let nodeId = Expression<Int64>("node_id")
     static let name = Expression<String>("name")
     static let type = Expression<Int64>("type")
-    static let value = Expression<AnyObject>("value")
+    static let value = Expression<String?>("value")
 }
