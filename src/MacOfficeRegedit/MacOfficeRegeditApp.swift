@@ -2,11 +2,16 @@ import SwiftUI
 
 @main
 struct MacOfficeRegeditApp: App {
-    let contentModel = ContentModel()
+    @StateObject private var dataStore = DataStore()
 
     var body: some Scene {
         WindowGroup {
-            ContentView(contentModel: contentModel)
+            ContentView(model: ContentModel())
+                .environmentObject(dataStore)
+        }
+        WindowGroup("RegValue", for: RegistryValue.ID.self) { $regValue in 
+            ModifyRegValueView(regValueId: regValue)
+                .environmentObject(dataStore)
         }
     }
 }

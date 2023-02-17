@@ -31,6 +31,11 @@ class ContentModel: ObservableObject {
         }
     }
     
+    // TODO: move to actrions
+    func modifyValue(_ item: RegistryValue) {
+        //
+    }
+    
     private func populatePreview() {
         self.allKeys = [
             RegistryKey(id: 1, name: "Foo", path: "Foo", children: [
