@@ -1,0 +1,620 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8794D858299FB66D00BCF0FC /* MacOfficeRegeditApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */; };
+		8794D85A299FB66D00BCF0FC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D859299FB66D00BCF0FC /* ContentView.swift */; };
+		8794D85C299FB66E00BCF0FC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8794D85B299FB66E00BCF0FC /* Assets.xcassets */; };
+		8794D85F299FB66E00BCF0FC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8794D85E299FB66E00BCF0FC /* Preview Assets.xcassets */; };
+		8794D86A299FB66E00BCF0FC /* MacOfficeRegeditTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D869299FB66E00BCF0FC /* MacOfficeRegeditTests.swift */; };
+		8794D874299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D873299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift */; };
+		8794D876299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D875299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift */; };
+		87E5BA75299FB712003E26A7 /* RegistryKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA74299FB712003E26A7 /* RegistryKey.swift */; };
+		87E5BA77299FB723003E26A7 /* RegistryValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA76299FB723003E26A7 /* RegistryValue.swift */; };
+		87E5BA79299FB774003E26A7 /* Reader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA78299FB774003E26A7 /* Reader.swift */; };
+		87E5BA7C299FB7D7003E26A7 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 87E5BA7B299FB7D7003E26A7 /* SQLite */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8794D866299FB66E00BCF0FC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8794D84C299FB66D00BCF0FC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8794D853299FB66D00BCF0FC;
+			remoteInfo = MacOfficeRegedit;
+		};
+		8794D870299FB66E00BCF0FC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8794D84C299FB66D00BCF0FC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8794D853299FB66D00BCF0FC;
+			remoteInfo = MacOfficeRegedit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8794D854299FB66D00BCF0FC /* MacOfficeRegedit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacOfficeRegedit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditApp.swift; sourceTree = "<group>"; };
+		8794D859299FB66D00BCF0FC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8794D85B299FB66E00BCF0FC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8794D85E299FB66E00BCF0FC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		8794D860299FB66E00BCF0FC /* MacOfficeRegedit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacOfficeRegedit.entitlements; sourceTree = "<group>"; };
+		8794D865299FB66E00BCF0FC /* MacOfficeRegeditTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacOfficeRegeditTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8794D869299FB66E00BCF0FC /* MacOfficeRegeditTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditTests.swift; sourceTree = "<group>"; };
+		8794D86F299FB66E00BCF0FC /* MacOfficeRegeditUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacOfficeRegeditUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8794D873299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditUITests.swift; sourceTree = "<group>"; };
+		8794D875299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		87E5BA74299FB712003E26A7 /* RegistryKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKey.swift; sourceTree = "<group>"; };
+		87E5BA76299FB723003E26A7 /* RegistryValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValue.swift; sourceTree = "<group>"; };
+		87E5BA78299FB774003E26A7 /* Reader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reader.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8794D851299FB66D00BCF0FC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				87E5BA7C299FB7D7003E26A7 /* SQLite in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8794D862299FB66E00BCF0FC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8794D86C299FB66E00BCF0FC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8794D84B299FB66D00BCF0FC = {
+			isa = PBXGroup;
+			children = (
+				8794D856299FB66D00BCF0FC /* MacOfficeRegedit */,
+				8794D868299FB66E00BCF0FC /* MacOfficeRegeditTests */,
+				8794D872299FB66E00BCF0FC /* MacOfficeRegeditUITests */,
+				8794D855299FB66D00BCF0FC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8794D855299FB66D00BCF0FC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8794D854299FB66D00BCF0FC /* MacOfficeRegedit.app */,
+				8794D865299FB66E00BCF0FC /* MacOfficeRegeditTests.xctest */,
+				8794D86F299FB66E00BCF0FC /* MacOfficeRegeditUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8794D856299FB66D00BCF0FC /* MacOfficeRegedit */ = {
+			isa = PBXGroup;
+			children = (
+				87E5BA73299FB6FA003E26A7 /* ListItems */,
+				8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */,
+				8794D859299FB66D00BCF0FC /* ContentView.swift */,
+				8794D85B299FB66E00BCF0FC /* Assets.xcassets */,
+				8794D860299FB66E00BCF0FC /* MacOfficeRegedit.entitlements */,
+				8794D85D299FB66E00BCF0FC /* Preview Content */,
+				87E5BA78299FB774003E26A7 /* Reader.swift */,
+			);
+			path = MacOfficeRegedit;
+			sourceTree = "<group>";
+		};
+		8794D85D299FB66E00BCF0FC /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				8794D85E299FB66E00BCF0FC /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8794D868299FB66E00BCF0FC /* MacOfficeRegeditTests */ = {
+			isa = PBXGroup;
+			children = (
+				8794D869299FB66E00BCF0FC /* MacOfficeRegeditTests.swift */,
+			);
+			path = MacOfficeRegeditTests;
+			sourceTree = "<group>";
+		};
+		8794D872299FB66E00BCF0FC /* MacOfficeRegeditUITests */ = {
+			isa = PBXGroup;
+			children = (
+				8794D873299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift */,
+				8794D875299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift */,
+			);
+			path = MacOfficeRegeditUITests;
+			sourceTree = "<group>";
+		};
+		87E5BA73299FB6FA003E26A7 /* ListItems */ = {
+			isa = PBXGroup;
+			children = (
+				87E5BA74299FB712003E26A7 /* RegistryKey.swift */,
+				87E5BA76299FB723003E26A7 /* RegistryValue.swift */,
+			);
+			path = ListItems;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8794D853299FB66D00BCF0FC /* MacOfficeRegedit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8794D879299FB66E00BCF0FC /* Build configuration list for PBXNativeTarget "MacOfficeRegedit" */;
+			buildPhases = (
+				8794D850299FB66D00BCF0FC /* Sources */,
+				8794D851299FB66D00BCF0FC /* Frameworks */,
+				8794D852299FB66D00BCF0FC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MacOfficeRegedit;
+			packageProductDependencies = (
+				87E5BA7B299FB7D7003E26A7 /* SQLite */,
+			);
+			productName = MacOfficeRegedit;
+			productReference = 8794D854299FB66D00BCF0FC /* MacOfficeRegedit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8794D864299FB66E00BCF0FC /* MacOfficeRegeditTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8794D87C299FB66E00BCF0FC /* Build configuration list for PBXNativeTarget "MacOfficeRegeditTests" */;
+			buildPhases = (
+				8794D861299FB66E00BCF0FC /* Sources */,
+				8794D862299FB66E00BCF0FC /* Frameworks */,
+				8794D863299FB66E00BCF0FC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8794D867299FB66E00BCF0FC /* PBXTargetDependency */,
+			);
+			name = MacOfficeRegeditTests;
+			productName = MacOfficeRegeditTests;
+			productReference = 8794D865299FB66E00BCF0FC /* MacOfficeRegeditTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8794D86E299FB66E00BCF0FC /* MacOfficeRegeditUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8794D87F299FB66E00BCF0FC /* Build configuration list for PBXNativeTarget "MacOfficeRegeditUITests" */;
+			buildPhases = (
+				8794D86B299FB66E00BCF0FC /* Sources */,
+				8794D86C299FB66E00BCF0FC /* Frameworks */,
+				8794D86D299FB66E00BCF0FC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8794D871299FB66E00BCF0FC /* PBXTargetDependency */,
+			);
+			name = MacOfficeRegeditUITests;
+			productName = MacOfficeRegeditUITests;
+			productReference = 8794D86F299FB66E00BCF0FC /* MacOfficeRegeditUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8794D84C299FB66D00BCF0FC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1420;
+				LastUpgradeCheck = 1420;
+				TargetAttributes = {
+					8794D853299FB66D00BCF0FC = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					8794D864299FB66E00BCF0FC = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = 8794D853299FB66D00BCF0FC;
+					};
+					8794D86E299FB66E00BCF0FC = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = 8794D853299FB66D00BCF0FC;
+					};
+				};
+			};
+			buildConfigurationList = 8794D84F299FB66D00BCF0FC /* Build configuration list for PBXProject "MacOfficeRegedit" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8794D84B299FB66D00BCF0FC;
+			packageReferences = (
+				87E5BA7A299FB7D7003E26A7 /* XCRemoteSwiftPackageReference "SQLite" */,
+			);
+			productRefGroup = 8794D855299FB66D00BCF0FC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8794D853299FB66D00BCF0FC /* MacOfficeRegedit */,
+				8794D864299FB66E00BCF0FC /* MacOfficeRegeditTests */,
+				8794D86E299FB66E00BCF0FC /* MacOfficeRegeditUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8794D852299FB66D00BCF0FC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8794D85F299FB66E00BCF0FC /* Preview Assets.xcassets in Resources */,
+				8794D85C299FB66E00BCF0FC /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8794D863299FB66E00BCF0FC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8794D86D299FB66E00BCF0FC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8794D850299FB66D00BCF0FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				87E5BA77299FB723003E26A7 /* RegistryValue.swift in Sources */,
+				8794D85A299FB66D00BCF0FC /* ContentView.swift in Sources */,
+				87E5BA79299FB774003E26A7 /* Reader.swift in Sources */,
+				87E5BA75299FB712003E26A7 /* RegistryKey.swift in Sources */,
+				8794D858299FB66D00BCF0FC /* MacOfficeRegeditApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8794D861299FB66E00BCF0FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8794D86A299FB66E00BCF0FC /* MacOfficeRegeditTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8794D86B299FB66E00BCF0FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8794D874299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift in Sources */,
+				8794D876299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8794D867299FB66E00BCF0FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8794D853299FB66D00BCF0FC /* MacOfficeRegedit */;
+			targetProxy = 8794D866299FB66E00BCF0FC /* PBXContainerItemProxy */;
+		};
+		8794D871299FB66E00BCF0FC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8794D853299FB66D00BCF0FC /* MacOfficeRegedit */;
+			targetProxy = 8794D870299FB66E00BCF0FC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		8794D877299FB66E00BCF0FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8794D878299FB66E00BCF0FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		8794D87A299FB66E00BCF0FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MacOfficeRegedit/MacOfficeRegedit.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MacOfficeRegedit/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slido.MacOfficeRegedit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8794D87B299FB66E00BCF0FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MacOfficeRegedit/MacOfficeRegedit.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MacOfficeRegedit/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slido.MacOfficeRegedit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8794D87D299FB66E00BCF0FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slido.MacOfficeRegeditTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MacOfficeRegedit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MacOfficeRegedit";
+			};
+			name = Debug;
+		};
+		8794D87E299FB66E00BCF0FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slido.MacOfficeRegeditTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MacOfficeRegedit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MacOfficeRegedit";
+			};
+			name = Release;
+		};
+		8794D880299FB66E00BCF0FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slido.MacOfficeRegeditUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = MacOfficeRegedit;
+			};
+			name = Debug;
+		};
+		8794D881299FB66E00BCF0FC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.slido.MacOfficeRegeditUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = MacOfficeRegedit;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8794D84F299FB66D00BCF0FC /* Build configuration list for PBXProject "MacOfficeRegedit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8794D877299FB66E00BCF0FC /* Debug */,
+				8794D878299FB66E00BCF0FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8794D879299FB66E00BCF0FC /* Build configuration list for PBXNativeTarget "MacOfficeRegedit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8794D87A299FB66E00BCF0FC /* Debug */,
+				8794D87B299FB66E00BCF0FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8794D87C299FB66E00BCF0FC /* Build configuration list for PBXNativeTarget "MacOfficeRegeditTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8794D87D299FB66E00BCF0FC /* Debug */,
+				8794D87E299FB66E00BCF0FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8794D87F299FB66E00BCF0FC /* Build configuration list for PBXNativeTarget "MacOfficeRegeditUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8794D880299FB66E00BCF0FC /* Debug */,
+				8794D881299FB66E00BCF0FC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		87E5BA7A299FB7D7003E26A7 /* XCRemoteSwiftPackageReference "SQLite" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stephencelis/SQLite.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		87E5BA7B299FB7D7003E26A7 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 87E5BA7A299FB7D7003E26A7 /* XCRemoteSwiftPackageReference "SQLite" */;
+			productName = SQLite;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8794D84C299FB66D00BCF0FC /* Project object */;
+}
