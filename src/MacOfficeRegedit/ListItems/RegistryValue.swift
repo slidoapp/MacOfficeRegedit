@@ -4,21 +4,20 @@ struct RegistryValue: Identifiable {
     let id: String // node_id+name
     let name: String
     let type: RegistryValueType?
-    let data: String?
+    let data: String
 
     var typeString: String {
         return "\(self.type!)"
     }
     
-    var dataString: String {
-        return "\(self.data ?? "// TODO: CHECK")"
-    }
-    
     var nameString: String {
         return self.name.isEmpty ? "(Default)" : self.name
     }
+    
+    var icon: String {
+        return self.type == .REG_BINARY ? "KeyValueBinary" : "KeyValueString"
+    }
 }
-
 
 /// https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-value-types
 enum RegistryValueType: Int64 {

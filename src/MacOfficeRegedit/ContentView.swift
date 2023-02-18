@@ -46,7 +46,7 @@ struct ContentView: View {
                 Table(self.model.values, selection: $selectedValue) {
                     TableColumn("Name") { item in
                         HStack {
-                            Image(nsImage: NSImage(named: NSImage.computerName) ?? NSImage())
+                            Image(nsImage: NSImage(named: item.icon) ?? NSImage())
                                 .resizable()
                                 .frame(width: 16, height: 16)
                             Text(item.nameString)
@@ -62,7 +62,7 @@ struct ContentView: View {
                         }
                     }
                     TableColumn("Type", value: \.typeString)
-                    TableColumn("Data", value: \.dataString)
+                    TableColumn("Data", value: \.data)
                 }
             }
         }
