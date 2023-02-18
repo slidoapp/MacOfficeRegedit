@@ -4,7 +4,7 @@ struct ContentView: View {
     @EnvironmentObject var dataStore: DataStore
     @Environment(\.openWindow) var openWindow
 
-    @StateObject var model: ContentModel
+    @StateObject var model = ContentModel()
     @State private var selectedValue: RegistryValue.ID?
     @State private var currentPath: String = ""
     
@@ -12,12 +12,34 @@ struct ContentView: View {
         VStack {
             TextField("Path", text: $model.currentPath)
             NavigationSplitView {
-                List(self.model.allKeys, id: \.self, children: \.children, selection: $model.selectedKey) { item in
+                List(self.model.allKeys, id: \.self, children: \.subKeys, selection: $model.selectedKey) { item in
                     HStack {
                         Image(nsImage: NSImage(named: NSImage.folderName) ?? NSImage())
                             .resizable()
                             .frame(width: 16, height: 16)
                         Text(item.name).help(item.path)
+                    }
+                    .contextMenu {
+                        Group {
+                            Button("Expand...") { }
+                            Button("New") { }
+                            Button("Find...") { }
+                        }
+                        Divider()
+                        Group {
+                            Button("Delete") { }
+                            Button("Rename") { }
+                        }
+                        Divider()
+                        Group {
+                            Button("Export") { }
+                            Button("Permissions") { }
+                        }
+                        Divider()
+                        Group {
+                            Button("Copy Key Name") { }
+                            Button("Go to") { }
+                        }
                     }
                 }
             } detail: {
@@ -27,7 +49,7 @@ struct ContentView: View {
                             Image(nsImage: NSImage(named: NSImage.computerName) ?? NSImage())
                                 .resizable()
                                 .frame(width: 16, height: 16)
-                            Text(item.name)
+                            Text(item.nameString)
                         }
                         .contextMenu {
                             Button("Modify...") {

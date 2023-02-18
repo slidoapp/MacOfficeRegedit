@@ -1,5 +1,5 @@
 import Foundation
 
-class DataStore: ObservableObject {
+final class DataStore: ObservableObject {
     // TODO
 }

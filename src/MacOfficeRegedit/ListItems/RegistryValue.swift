@@ -11,10 +11,16 @@ struct RegistryValue: Identifiable {
     }
     
     var dataString: String {
-        return "\(self.data ?? "")"
+        return "\(self.data ?? "// TODO: CHECK")"
+    }
+    
+    var nameString: String {
+        return self.name.isEmpty ? "(Default)" : self.name
     }
 }
 
+
+/// https://learn.microsoft.com/en-us/windows/win32/sysinfo/registry-value-types
 enum RegistryValueType: Int64 {
     case REG_NONE = 0
     case REG_SZ = 1

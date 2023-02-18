@@ -29,13 +29,13 @@ class Reader {
         do {
             for row in try db.prepare(query) {
                 let path = "\(path)\\\(row[HkcuKeysCols.name])"
-                let children = self.fetchKeys(parentId: row[HkcuKeysCols.nodeId], path: path)
+                let subKeys = self.fetchKeys(parentId: row[HkcuKeysCols.nodeId], path: path)
                 
                 items.append(RegistryKey(
                     id: row[HkcuKeysCols.nodeId],
                     name: row[HkcuKeysCols.name],
                     path: path,
-                    children: children
+                    subKeys: subKeys.isEmpty ? nil : subKeys
                 ))
             }
         }
@@ -58,11 +58,13 @@ class Reader {
         
         do {
             for row in try db.prepare(query) {
+                let valueType = RegistryValueType(rawValue: row[HkcuValuesCols.type]) ?? .REG_NONE
+                
                 items.append(RegistryValue(
                     id: "\(nodeId)/\(row[HkcuValuesCols.name])",
                     name: row[HkcuValuesCols.name],
-                    type: RegistryValueType(rawValue: row[HkcuValuesCols.type]),
-                    data: row[HkcuValuesCols.value]
+                    type: valueType,
+                    data: getDataString(row: row, valueType: valueType)
                 ))
             }
         }
@@ -73,23 +75,41 @@ class Reader {
         
         return items
     }
+    
+    func getDataString(row: Row, valueType: RegistryValueType) -> String? {
+        switch valueType {
+        case .REG_DWORD, .REG_DWORD_BIG_ENDIAN, .REG_QWORD:
+            return String(row[Expression<Int64>("value")])
+        case .REG_BINARY:
+            return row[Expression<Blob>("value")].toHex(separator: " ")
+        default:
+            return row[Expression<String>("value")]
+            
+        }
+    }
+    
+    struct Tables {
+        static let hkcuKeys = Table("HKEY_CURRENT_USER")
+        static let hkcuValues = Table("HKEY_CURRENT_USER_values")
+    }
+
+    struct HkcuKeysCols {
+        static let nodeId = Expression<Int64>("node_id")
+        static let parentId = Expression<Int64>("parent_id")
+        static let name = Expression<String>("name")
+    }
+
+    struct HkcuValuesCols {
+        static let nodeId = Expression<Int64>("node_id")
+        static let name = Expression<String>("name") // default values are represented as empty strings, not NILs
+        static let type = Expression<Int64>("type")
+    }
 }
 
-
-struct Tables {
-    static let hkcuKeys = Table("HKEY_CURRENT_USER")
-    static let hkcuValues = Table("HKEY_CURRENT_USER_values")
-}
-
-struct HkcuKeysCols {
-    static let nodeId = Expression<Int64>("node_id")
-    static let parentId = Expression<Int64>("parent_id")
-    static let name = Expression<String>("name")
-}
-
-struct HkcuValuesCols {
-    static let nodeId = Expression<Int64>("node_id")
-    static let name = Expression<String>("name")
-    static let type = Expression<Int64>("type")
-    static let value = Expression<String?>("value")
+extension Blob {
+    func toHex(separator: String) -> String {
+        bytes.map {
+           ($0 < 16 ? "0" : "") + String($0, radix: 16, uppercase: false)
+        }.joined(separator: separator)
+    }
 }

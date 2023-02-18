@@ -38,8 +38,8 @@ class ContentModel: ObservableObject {
     
     private func populatePreview() {
         self.allKeys = [
-            RegistryKey(id: 1, name: "Foo", path: "Foo", children: [
-                RegistryKey(id: 11, name: "Bar", path: "Foo\\Bar", children: [])
+            RegistryKey(id: 1, name: "Foo", path: "Foo", subKeys: [
+                RegistryKey(id: 11, name: "Bar", path: "Foo\\Bar", subKeys: [])
             ])
         ]
         

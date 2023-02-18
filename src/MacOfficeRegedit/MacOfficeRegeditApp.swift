@@ -6,12 +6,14 @@ struct MacOfficeRegeditApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(model: ContentModel())
+            ContentView()
                 .environmentObject(dataStore)
+                .navigationTitle("Regedit")
         }
         WindowGroup("RegValue", for: RegistryValue.ID.self) { $regValue in 
             ModifyRegValueView(regValueId: regValue)
                 .environmentObject(dataStore)
+                .navigationTitle("Modify")
         }
     }
 }
