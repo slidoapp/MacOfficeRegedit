@@ -78,8 +78,12 @@ class Reader {
     
     func getDataString(row: Row, valueType: RegistryValueType) -> String {
         switch valueType {
-        case .REG_DWORD, .REG_DWORD_BIG_ENDIAN, .REG_QWORD:
-            return String(row[Expression<Int64>("value")])
+        case .REG_DWORD, .REG_DWORD_BIG_ENDIAN:
+            let number = row[Expression<Int64>("value")]
+            return String(format: "0x%08x (\(number))", number)
+        case .REG_QWORD:
+            let number = row[Expression<Int64>("value")]
+            return String(format: "0x%016x (\(number))", number)
         case .REG_BINARY:
             return row[Expression<Blob>("value")].toHex(separator: " ")
         default:
