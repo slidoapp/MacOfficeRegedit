@@ -10,7 +10,7 @@ struct MacOfficeRegeditApp: App {
                 .environmentObject(dataStore)
                 .navigationTitle("Regedit")
         }
-        WindowGroup("RegValue", for: RegistryValue.ID.self) { $regValue in 
+        WindowGroup("RegValue", for: RegistryValueTableItem.ID.self) { $regValue in 
             ModifyRegValueView(regValueId: regValue)
                 .environmentObject(dataStore)
                 .navigationTitle("Modify")

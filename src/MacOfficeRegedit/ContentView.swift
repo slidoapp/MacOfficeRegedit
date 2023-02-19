@@ -5,14 +5,14 @@ struct ContentView: View {
     @Environment(\.openWindow) var openWindow
 
     @StateObject var model = ContentModel()
-    @State private var selectedValue: RegistryValue.ID?
+    @State private var selectedValue: RegistryValueTableItem.ID?
     @State private var currentPath: String = ""
     
     var body: some View {
         VStack {
             TextField("Path", text: $model.currentPath)
             NavigationSplitView {
-                List(self.model.allKeys, id: \.self, children: \.subKeys, selection: $model.selectedKey) { item in
+                List(self.model.allKeys, id: \.self, children: \.children, selection: $model.selectedKey) { item in
                     HStack {
                         Image(nsImage: NSImage(named: NSImage.folderName) ?? NSImage())
                             .resizable()
@@ -49,7 +49,7 @@ struct ContentView: View {
                             Image(nsImage: NSImage(named: item.icon) ?? NSImage())
                                 .resizable()
                                 .frame(width: 16, height: 16)
-                            Text(item.nameString)
+                            Text(item.name)
                         }
                         .contextMenu {
                             Button("Modify...") {
@@ -61,7 +61,8 @@ struct ContentView: View {
                             Button("Rename") { }
                         }
                     }
-                    TableColumn("Type", value: \.typeString)
+                    TableColumn("Type", value: \.type)
+                        .width(min: 100, ideal: 100)
                     TableColumn("Data", value: \.data)
                 }
             }
