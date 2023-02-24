@@ -18,9 +18,13 @@
 		87E5BA77299FB723003E26A7 /* RegistryValueTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA76299FB723003E26A7 /* RegistryValueTableItem.swift */; };
 		87E5BA79299FB774003E26A7 /* Reader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA78299FB774003E26A7 /* Reader.swift */; };
 		87E5BA7C299FB7D7003E26A7 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 87E5BA7B299FB7D7003E26A7 /* SQLite */; };
-		87E5BA7E299FD48B003E26A7 /* ContentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA7D299FD48B003E26A7 /* ContentModel.swift */; };
 		87F48764299FEA8A0001EFDC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F48763299FEA8A0001EFDC /* DataStore.swift */; };
-		87F48767299FEC890001EFDC /* ModifyRegValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F48766299FEC890001EFDC /* ModifyRegValueView.swift */; };
+		87F48767299FEC890001EFDC /* EditStringValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F48766299FEC890001EFDC /* EditStringValueView.swift */; };
+		87F4876B29A8CCE80001EFDC /* KeysTreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4876A29A8CCE80001EFDC /* KeysTreeView.swift */; };
+		87F4876D29A8DD430001EFDC /* ValuesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4876C29A8DD430001EFDC /* ValuesTableView.swift */; };
+		87F4877029A8FF790001EFDC /* EditNumericValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4876F29A8FF790001EFDC /* EditNumericValueView.swift */; };
+		87F4877229A9086C0001EFDC /* EditBinaryValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4877129A9086C0001EFDC /* EditBinaryValueView.swift */; };
+		87F4877429A91B3B0001EFDC /* RegistryKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4877329A91B3B0001EFDC /* RegistryKeyViewModel.swift */; };
 		B4E5EFDB29A242B3000BDCB0 /* RegistryKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFDA29A242B3000BDCB0 /* RegistryKey.swift */; };
 		B4E5EFDD29A25394000BDCB0 /* RegistryValueType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFDC29A25394000BDCB0 /* RegistryValueType.swift */; };
 		B4E5EFDF29A2543F000BDCB0 /* RegistryValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFDE29A2543F000BDCB0 /* RegistryValue.swift */; };
@@ -60,9 +64,13 @@
 		87E5BA74299FB712003E26A7 /* RegistryKeyListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKeyListItem.swift; sourceTree = "<group>"; };
 		87E5BA76299FB723003E26A7 /* RegistryValueTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValueTableItem.swift; sourceTree = "<group>"; };
 		87E5BA78299FB774003E26A7 /* Reader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reader.swift; sourceTree = "<group>"; };
-		87E5BA7D299FD48B003E26A7 /* ContentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentModel.swift; sourceTree = "<group>"; };
 		87F48763299FEA8A0001EFDC /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
-		87F48766299FEC890001EFDC /* ModifyRegValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyRegValueView.swift; sourceTree = "<group>"; };
+		87F48766299FEC890001EFDC /* EditStringValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStringValueView.swift; sourceTree = "<group>"; };
+		87F4876A29A8CCE80001EFDC /* KeysTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysTreeView.swift; sourceTree = "<group>"; };
+		87F4876C29A8DD430001EFDC /* ValuesTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuesTableView.swift; sourceTree = "<group>"; };
+		87F4876F29A8FF790001EFDC /* EditNumericValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditNumericValueView.swift; sourceTree = "<group>"; };
+		87F4877129A9086C0001EFDC /* EditBinaryValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBinaryValueView.swift; sourceTree = "<group>"; };
+		87F4877329A91B3B0001EFDC /* RegistryKeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKeyViewModel.swift; sourceTree = "<group>"; };
 		B4E5EFDA29A242B3000BDCB0 /* RegistryKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKey.swift; sourceTree = "<group>"; };
 		B4E5EFDC29A25394000BDCB0 /* RegistryValueType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValueType.swift; sourceTree = "<group>"; };
 		B4E5EFDE29A2543F000BDCB0 /* RegistryValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValue.swift; sourceTree = "<group>"; };
@@ -122,8 +130,6 @@
 				B4E5EFE029A29414000BDCB0 /* Database */,
 				B4E5EFD929A2428F000BDCB0 /* Models */,
 				8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */,
-				87E5BA7D299FD48B003E26A7 /* ContentModel.swift */,
-				8794D859299FB66D00BCF0FC /* ContentView.swift */,
 				8794D85B299FB66E00BCF0FC /* Assets.xcassets */,
 				8794D860299FB66E00BCF0FC /* MacOfficeRegedit.entitlements */,
 				8794D85D299FB66E00BCF0FC /* Preview Content */,
@@ -163,6 +169,7 @@
 			children = (
 				87E5BA74299FB712003E26A7 /* RegistryKeyListItem.swift */,
 				87E5BA76299FB723003E26A7 /* RegistryValueTableItem.swift */,
+				8794D859299FB66D00BCF0FC /* ContentView.swift */,
 			);
 			path = Items;
 			sourceTree = "<group>";
@@ -170,16 +177,29 @@
 		87F48765299FEC690001EFDC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				87F4876E29A8FE730001EFDC /* ValueEditors */,
 				87E5BA73299FB6FA003E26A7 /* Items */,
-				87F48766299FEC890001EFDC /* ModifyRegValueView.swift */,
+				87F4876A29A8CCE80001EFDC /* KeysTreeView.swift */,
+				87F4876C29A8DD430001EFDC /* ValuesTableView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		87F4876E29A8FE730001EFDC /* ValueEditors */ = {
+			isa = PBXGroup;
+			children = (
+				87F4877129A9086C0001EFDC /* EditBinaryValueView.swift */,
+				87F4876F29A8FF790001EFDC /* EditNumericValueView.swift */,
+				87F48766299FEC890001EFDC /* EditStringValueView.swift */,
+			);
+			path = ValueEditors;
 			sourceTree = "<group>";
 		};
 		B4E5EFD929A2428F000BDCB0 /* Models */ = {
 			isa = PBXGroup;
 			children = (
 				B4E5EFDA29A242B3000BDCB0 /* RegistryKey.swift */,
+				87F4877329A91B3B0001EFDC /* RegistryKeyViewModel.swift */,
 				B4E5EFDE29A2543F000BDCB0 /* RegistryValue.swift */,
 				B4E5EFDC29A25394000BDCB0 /* RegistryValueType.swift */,
 			);
@@ -340,19 +360,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				87F4877029A8FF790001EFDC /* EditNumericValueView.swift in Sources */,
 				87F48764299FEA8A0001EFDC /* DataStore.swift in Sources */,
-				87F48767299FEC890001EFDC /* ModifyRegValueView.swift in Sources */,
+				87F48767299FEC890001EFDC /* EditStringValueView.swift in Sources */,
 				B4E5EFDF29A2543F000BDCB0 /* RegistryValue.swift in Sources */,
 				87E5BA77299FB723003E26A7 /* RegistryValueTableItem.swift in Sources */,
 				8794D85A299FB66D00BCF0FC /* ContentView.swift in Sources */,
+				87F4876D29A8DD430001EFDC /* ValuesTableView.swift in Sources */,
+				87F4877229A9086C0001EFDC /* EditBinaryValueView.swift in Sources */,
 				B4E5EFE529A29482000BDCB0 /* RegistryKeysTable.swift in Sources */,
+				87F4876B29A8CCE80001EFDC /* KeysTreeView.swift in Sources */,
 				B4E5EFDD29A25394000BDCB0 /* RegistryValueType.swift in Sources */,
 				B4E5EFDB29A242B3000BDCB0 /* RegistryKey.swift in Sources */,
 				87E5BA79299FB774003E26A7 /* Reader.swift in Sources */,
 				87E5BA75299FB712003E26A7 /* RegistryKeyListItem.swift in Sources */,
+				87F4877429A91B3B0001EFDC /* RegistryKeyViewModel.swift in Sources */,
 				8794D858299FB66D00BCF0FC /* MacOfficeRegeditApp.swift in Sources */,
 				B4E5EFE329A29453000BDCB0 /* RegistryValuesTable.swift in Sources */,
-				87E5BA7E299FD48B003E26A7 /* ContentModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

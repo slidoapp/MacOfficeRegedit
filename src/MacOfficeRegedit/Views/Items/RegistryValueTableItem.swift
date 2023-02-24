@@ -7,6 +7,7 @@ struct RegistryValueTableItem: Identifiable {
     let type: String
     let icon: String
     let data: String
+    let modifyWindowId: String
     
     init(fromRegValue regValue: RegistryValue) {
         self.id = "\(regValue.nodeId):\(regValue.name)"
@@ -14,6 +15,18 @@ struct RegistryValueTableItem: Identifiable {
         self.icon = regValue.type == .REG_BINARY ? "KeyValueBinary" : "KeyValueString"
         self.type = "\(regValue.type!)"
         self.data = RegistryValueTableItem.getDataString(regValue: regValue)
+        self.modifyWindowId = RegistryValueTableItem.getModifyWindowId(regValueType: regValue.type!)
+    }
+    
+    private static func getModifyWindowId(regValueType: RegistryValueType) -> String {
+        switch regValueType {
+        case .REG_DWORD, .REG_DWORD_BIG_ENDIAN, .REG_QWORD:
+            return EditNumericValueView.windowId
+        case .REG_BINARY:
+            return EditBinaryValueView.windowId
+        default:
+            return EditStringValueView.windowId
+        }
     }
     
     private static func getDataString(regValue: RegistryValue) -> String {
