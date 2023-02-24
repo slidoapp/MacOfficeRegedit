@@ -1,4 +1,3 @@
-
 import Foundation
 
 class ContentModel: ObservableObject {
@@ -33,13 +32,10 @@ class ContentModel: ObservableObject {
             self.allKeys = reader.fetchKeys().map {
                 RegistryKeyListItem(fromRegKey: $0)
             }
-            debugPrint("Fetching keys hierarchy took: \((CFAbsoluteTimeGetCurrent() - fStart) * 1000) ms.")
+            
+            let ms = (CFAbsoluteTimeGetCurrent() - fStart) * 1000
+            debugPrint("Fetching keys took: \(Int(ms)) ms.")
         }
-    }
-    
-    // TODO: move to actrions
-    func modifyValue(_ item: RegistryValueTableItem) {
-        //
     }
     
     private func populatePreview() {

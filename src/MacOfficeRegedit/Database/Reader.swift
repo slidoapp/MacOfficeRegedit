@@ -34,7 +34,7 @@ class Reader {
                 var regKey: RegistryKey = try $0.decode()
                 let parentPath = parentRegKey?.path ?? "Computer\\HKEY_CURRENT_USER"
                 regKey.path = "\(parentPath)\\\(regKey.name)"
-                regKey.writeTime = try $0.get(Table.Expressions.writeTime).bytes
+                regKey.writeTime = try $0.get(Table.Expressions.writeTime)
                 regKey.subKeys = self.fetchKeys(parentRegKey: regKey)
                 return regKey
             }
