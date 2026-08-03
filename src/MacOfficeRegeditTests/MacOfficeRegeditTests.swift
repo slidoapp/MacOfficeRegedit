@@ -18,6 +18,19 @@ final class MacOfficeRegeditTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
+    func testDwordHexRenderingPreservesAll32Bits() throws {
+        let value = RegistryValue(
+            nodeId: 1,
+            name: "DwordValue",
+            type: .REG_DWORD,
+            value: Int64(0x89abcdef)
+        )
+
+        let item = RegistryValueTableItem(fromRegValue: value)
+
+        XCTAssertEqual(item.data, "0x89abcdef (2309737967)")
+    }
+
     func testQwordHexRenderingPreservesUpper32Bits() throws {
         let value = RegistryValue(
             nodeId: 1,
