@@ -40,7 +40,8 @@ struct RegistryValueTableItem: Identifiable {
             return String(format: "0x%08x (\(num))", num)
         case .REG_QWORD:
             let num = val as! Int64
-            return String(format: "0x%016x (\(num))", num)
+            let hexValue = UInt64(bitPattern: num)
+            return String(format: "0x%016llx (\(num))", hexValue)
         case .REG_BINARY:
             let bin = val as! [UInt8]
             return bin.map {
