@@ -281,12 +281,19 @@ final class RegistryDatabaseTests: XCTestCase {
     }
 
     func testWriteWaitsForOfficeWriteLock() throws {
-        // Used from the background closure only after this thread stops touching it.
-        nonisolated(unsafe) let office = try Connection(url.path)
-        try office.run("BEGIN IMMEDIATE")
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+        // "Office" holds the write lock on its own connection and thread for 0.3 s.
+        let url = url!
+        let locked = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            guard let office = try? Connection(url.path), (try? office.run("BEGIN IMMEDIATE")) != nil else {
+                locked.signal()
+                return
+            }
+            locked.signal()
+            Thread.sleep(forTimeInterval: 0.3)
             _ = try? office.run("COMMIT")
         }
+        locked.wait()
         // busyTimeout (5 s) applies because the write lock is requested up front.
         try database.createKey(named: "Waited", parentId: 3)
         XCTAssertNotNil(try database.childKeyId(parentId: 3, name: "Waited"))
