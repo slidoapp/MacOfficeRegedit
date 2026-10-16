@@ -281,7 +281,8 @@ final class RegistryDatabaseTests: XCTestCase {
     }
 
     func testWriteWaitsForOfficeWriteLock() throws {
-        let office = try Connection(url.path)
+        // Used from the background closure only after this thread stops touching it.
+        nonisolated(unsafe) let office = try Connection(url.path)
         try office.run("BEGIN IMMEDIATE")
         DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
             _ = try? office.run("COMMIT")

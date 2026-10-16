@@ -79,7 +79,7 @@ struct EditNumericValueView: View {
         .frame(width: 440)
     }
 
-    static func number(of data: RegistryData) -> UInt64 {
+    nonisolated static func number(of data: RegistryData) -> UInt64 {
         switch data {
         case .dword(let number): return UInt64(number)
         case .qword(let number): return number
@@ -88,7 +88,7 @@ struct EditNumericValueView: View {
     }
 
     /// Parses user input; accepts an optional `0x` prefix in hexadecimal mode. Empty input means 0, like Windows.
-    static func parse(_ text: String, base: Base, maximum: UInt64) -> UInt64? {
+    nonisolated static func parse(_ text: String, base: Base, maximum: UInt64) -> UInt64? {
         var digits = text.trimmingCharacters(in: .whitespaces)
         if base == .hexadecimal, digits.lowercased().hasPrefix("0x") {
             digits.removeFirst(2)

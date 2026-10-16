@@ -1,11 +1,12 @@
 import XCTest
 
 /// UI tests always run against a throwaway database, never the live Office registry.
+@MainActor
 final class MacOfficeRegeditUITests: XCTestCase {
     private var databaseURL: URL!
     private var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         continueAfterFailure = false
         databaseURL = FileManager.default.temporaryDirectory.appendingPathComponent("UITest-\(UUID().uuidString).reg")
         try createFixture(at: databaseURL)
@@ -19,7 +20,7 @@ final class MacOfficeRegeditUITests: XCTestCase {
         app.launch()
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         app.terminate()
         try? FileManager.default.removeItem(at: databaseURL)
         try? FileManager.default.removeItem(at: backupsURL)

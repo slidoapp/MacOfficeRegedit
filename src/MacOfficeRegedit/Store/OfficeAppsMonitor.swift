@@ -13,14 +13,16 @@ final class OfficeAppsMonitor: ObservableObject {
 
     @Published private(set) var runningApps: [String] = []
 
-    private var observers: [NSObjectProtocol] = []
+    /// Written once in `init` and read in `deinit`, when nothing else can reference the monitor.
+    private nonisolated(unsafe) var observers: [NSObjectProtocol] = []
 
     init() {
         refresh()
         let center = NSWorkspace.shared.notificationCenter
         for name in [NSWorkspace.didLaunchApplicationNotification, NSWorkspace.didTerminateApplicationNotification] {
             observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                Task { @MainActor in
+                // Delivered on the main queue, so update synchronously instead of hopping through a Task.
+                MainActor.assumeIsolated {
                     self?.refresh()
                 }
             })
