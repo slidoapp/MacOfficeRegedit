@@ -46,12 +46,10 @@ struct EditMultiStringValueView: View {
     }
 }
 
-struct EditMultiStringValueView_Previews: PreviewProvider {
-    static var previews: some View {
-        EditMultiStringValueView(
-            value: RegistryValue(keyId: 1, name: "Paths", type: .REG_MULTI_SZ, data: .multiString(["a", "b"])),
-            isNew: false,
-            onCommit: { _ in }
-        )
-    }
+#Preview {
+    EditMultiStringValueView(
+        value: RegistryValue(keyId: 1, name: "Paths", type: .REG_MULTI_SZ, data: .multiString(["a", "b"])),
+        isNew: false,
+        onCommit: { _ in }
+    )
 }

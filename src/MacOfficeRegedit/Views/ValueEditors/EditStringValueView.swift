@@ -42,12 +42,10 @@ struct EditStringValueView: View {
     }
 }
 
-struct EditStringValueView_Previews: PreviewProvider {
-    static var previews: some View {
-        EditStringValueView(
-            value: RegistryValue(keyId: 1, name: "Greeting", type: .REG_SZ, data: .string("Hello")),
-            isNew: false,
-            onCommit: { _ in }
-        )
-    }
+#Preview {
+    EditStringValueView(
+        value: RegistryValue(keyId: 1, name: "Greeting", type: .REG_SZ, data: .string("Hello")),
+        isNew: false,
+        onCommit: { _ in }
+    )
 }

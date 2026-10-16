@@ -68,9 +68,9 @@ struct EditNumericValueView: View {
                     Text("Decimal").tag(Base.decimal)
                 }
                 .pickerStyle(.radioGroup)
-                .onChange(of: base) { [base] newBase in
+                .onChange(of: base) { oldBase, newBase in
                     // Convert the current number like Windows does when switching base.
-                    if let number = EditNumericValueView.parse(text, base: base, maximum: maximum) {
+                    if let number = EditNumericValueView.parse(text, base: oldBase, maximum: maximum) {
                         text = String(number, radix: newBase.radix)
                     }
                 }
@@ -103,12 +103,18 @@ struct EditNumericValueView: View {
     }
 }
 
-struct EditNumericValueView_Previews: PreviewProvider {
-    static var previews: some View {
-        EditNumericValueView(
-            value: RegistryValue(keyId: 1, name: "Lcid", type: .REG_DWORD, data: .dword(1051)),
-            isNew: false,
-            onCommit: { _ in }
-        )
-    }
+#Preview("DWORD") {
+    EditNumericValueView(
+        value: RegistryValue(keyId: 1, name: "Lcid", type: .REG_DWORD, data: .dword(1051)),
+        isNew: false,
+        onCommit: { _ in }
+    )
+}
+
+#Preview("QWORD") {
+    EditNumericValueView(
+        value: RegistryValue(keyId: 1, name: "LastUpdateCheck", type: .REG_QWORD, data: .qword(134_364_444_600_000_000)),
+        isNew: false,
+        onCommit: { _ in }
+    )
 }

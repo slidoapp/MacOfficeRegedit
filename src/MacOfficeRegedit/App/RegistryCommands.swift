@@ -5,7 +5,7 @@ import SwiftUI
 /// Commands are disabled while a dialog is showing: menu shortcuts are handled before text fields,
 /// and assigning a new sheet would discard the edit in progress.
 struct RegistryCommands: Commands {
-    @ObservedObject var store: RegistryStore
+    let store: RegistryStore
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {

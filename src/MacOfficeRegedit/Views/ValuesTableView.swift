@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Values of the selected key (right pane).
 struct ValuesTableView: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
 
     @State private var sortOrder: [KeyPathComparator<RegistryValue>] = []
 
@@ -11,6 +11,7 @@ struct ValuesTableView: View {
     }
 
     var body: some View {
+        @Bindable var store = store
         Table(rows, selection: $store.selectedValueIds, sortOrder: $sortOrder) {
             TableColumn("Name", value: \.displayName) { value in
                 HStack(spacing: 4) {
@@ -43,12 +44,34 @@ struct ValuesTableView: View {
         .onDeleteCommand {
             store.beginDelete(in: .values)
         }
-        .onChange(of: store.selectedValueIds) { ids in
+        .onChange(of: store.selectedValueIds) { _, ids in
             if !ids.isEmpty {
                 store.focusedPane = .values
             }
         }
+        .overlay {
+            emptyState
+                // Let clicks through, so the empty table's context menu (New ▸) still works.
+                .allowsHitTesting(false)
+        }
         .accessibilityIdentifier("valuesTable")
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        if store.selectedKey?.isRoot == true {
+            ContentUnavailableView(
+                RegistryPath.hive,
+                systemImage: "folder",
+                description: Text("Select a key to see its values.")
+            )
+        } else if store.selectedKey != nil, store.values.isEmpty {
+            ContentUnavailableView(
+                "No Values",
+                systemImage: "tray",
+                description: Text(store.canEdit ? "Right-click to add a value." : "This key has no values.")
+            )
+        }
     }
 
     @ViewBuilder
@@ -93,9 +116,17 @@ struct ValuesTableView: View {
     }
 }
 
-struct ValuesTableView_Previews: PreviewProvider {
-    static var previews: some View {
-        ValuesTableView()
-            .environmentObject(RegistryStore())
-    }
+// RegistryStore.preview() exists in Debug builds only.
+#if DEBUG
+#Preview("Values") {
+    ValuesTableView()
+        .environment(RegistryStore.preview())
+        .frame(width: 700, height: 300)
 }
+
+#Preview("No values") {
+    ValuesTableView()
+        .environment(RegistryStore.preview(selecting: "Software\\Microsoft\\Office\\16.0"))
+        .frame(width: 700, height: 300)
+}
+#endif

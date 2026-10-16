@@ -1,8 +1,11 @@
 import AppKit
+import Observation
+import Synchronization
 
 /// Tracks running Office apps. They read the registry at launch and may overwrite edits when they quit.
 @MainActor
-final class OfficeAppsMonitor: ObservableObject {
+@Observable
+final class OfficeAppsMonitor {
     static let bundleIdentifiers: [String: String] = [
         "com.microsoft.Word": "Word",
         "com.microsoft.Excel": "Excel",
@@ -11,26 +14,30 @@ final class OfficeAppsMonitor: ObservableObject {
         "com.microsoft.onenote.mac": "OneNote",
     ]
 
-    @Published private(set) var runningApps: [String] = []
+    private(set) var runningApps: [String] = []
 
-    /// Written once in `init` and read in `deinit`, when nothing else can reference the monitor.
-    private nonisolated(unsafe) var observers: [NSObjectProtocol] = []
+    /// Tasks listening for app launches and terminations; cancelled in `deinit`. A `Mutex`, because the
+    /// nonisolated `deinit` reads it.
+    private let listeners = Mutex<[Task<Void, Never>]>([])
 
     init() {
         refresh()
         let center = NSWorkspace.shared.notificationCenter
-        for name in [NSWorkspace.didLaunchApplicationNotification, NSWorkspace.didTerminateApplicationNotification] {
-            observers.append(center.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                // Delivered on the main queue, so update synchronously instead of hopping through a Task.
-                MainActor.assumeIsolated {
+        let tasks = [NSWorkspace.didLaunchApplicationNotification, NSWorkspace.didTerminateApplicationNotification].map { name in
+            // Inherits the main actor, so `refresh()` runs on it.
+            Task { [weak self] in
+                for await _ in center.notifications(named: name) {
                     self?.refresh()
                 }
-            })
+            }
         }
+        listeners.withLock { $0 = tasks }
     }
 
     deinit {
-        observers.forEach(NSWorkspace.shared.notificationCenter.removeObserver)
+        listeners.withLock { tasks in
+            tasks.forEach { $0.cancel() }
+        }
     }
 
     private func refresh() {
