@@ -41,6 +41,18 @@ struct ContentView: View {
         } message: { deletion in
             Text(deletion.message)
         }
+        .confirmationDialog(
+            "Import Registry File",
+            isPresented: Binding(get: { store.pendingImport != nil }, set: { if !$0 { store.pendingImport = nil } }),
+            presenting: store.pendingImport
+        ) { pendingImport in
+            Button("Import") {
+                store.performImport(pendingImport)
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { pendingImport in
+            Text(importMessage(pendingImport))
+        }
         .alert(
             "Registry Editor",
             isPresented: Binding(get: { store.alertMessage != nil }, set: { if !$0 { store.alertMessage = nil } }),
@@ -51,6 +63,23 @@ struct ContentView: View {
             Text(message)
         }
     }
+}
+
+private func importMessage(_ pendingImport: RegistryStore.PendingImport) -> String {
+    let keys = pendingImport.document.keys
+    var message = "Adding information can unintentionally change or delete values and cause Office to stop working correctly. "
+        + "Are you sure you want to import \(keys.filter { !$0.isDeletion }.count) key(s) from \"\(pendingImport.url.lastPathComponent)\"?"
+    let deletions = keys.filter(\.isDeletion).map { RegistryPath.qualified($0.path) }
+    if !deletions.isEmpty {
+        let listed = deletions.prefix(5).joined(separator: "\n")
+        let more = deletions.count > 5 ? "\n…and \(deletions.count - 5) more" : ""
+        message += "\n\nThe file also DELETES these keys with all their subkeys:\n\(listed)\(more)"
+    }
+    let deletedValues = keys.flatMap(\.values).filter { $0.data == nil }.count
+    if deletedValues > 0 {
+        message += "\n\nIt deletes \(deletedValues) value(s)."
+    }
+    return message
 }
 
 private struct SheetContent: View {

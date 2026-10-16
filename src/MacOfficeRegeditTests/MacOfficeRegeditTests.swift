@@ -326,6 +326,39 @@ final class RegistryDatabaseTests: XCTestCase {
         XCTAssertEqual(try copy.fetchAllKeys().count, 3)
         XCTAssertEqual(try copy.fetchAllValues().count, 6)
     }
+
+    func testApplyRegFileDocument() throws {
+        try database.createKey(named: "Obsolete", parentId: 1)
+        let document = RegFileDocument(keys: [
+            .init(path: ["Software", "Obsolete"], isDeletion: true, values: []),
+            .init(path: ["Software", "Microsoft", "Office"], isDeletion: false, values: [
+                .init(name: "Name", type: .REG_SZ, data: .string("Replaced")),
+                .init(name: "Blob", type: .REG_BINARY, data: nil),
+                .init(name: "Missing", type: .REG_BINARY, data: nil),
+            ]),
+            .init(path: ["Software", "New", "Child"], isDeletion: false, values: [
+                .init(name: "", type: .REG_DWORD, data: .dword(1)),
+            ]),
+            .init(path: ["Software", "DoesNotExist"], isDeletion: true, values: []),
+        ])
+        try RegistryStore.apply(document, to: database)
+
+        XCTAssertNil(try database.childKeyId(parentId: 1, name: "Obsolete"))
+        XCTAssertEqual(try database.fetchValue(keyId: 3, name: "Name")?.data, .string("Replaced"))
+        XCTAssertNil(try database.fetchValue(keyId: 3, name: "Blob"))
+        let newId = try XCTUnwrap(try database.childKeyId(parentId: 1, name: "New"))
+        let childId = try XCTUnwrap(try database.childKeyId(parentId: newId, name: "Child"))
+        XCTAssertEqual(try database.fetchValue(keyId: childId, name: "")?.data, .dword(1))
+    }
+
+    func testApplyIsAtomic() throws {
+        let document = RegFileDocument(keys: [
+            .init(path: ["Software", "Created"], isDeletion: false, values: []),
+            .init(path: [], isDeletion: false, values: [.init(name: "x", type: .REG_SZ, data: .string("root values are invalid"))]),
+        ])
+        XCTAssertThrowsError(try RegistryStore.apply(document, to: database))
+        XCTAssertNil(try database.childKeyId(parentId: 1, name: "Created"))
+    }
 }
 
 @MainActor
@@ -463,5 +496,42 @@ final class RegistryStoreTests: XCTestCase {
         let files = try FileManager.default.contentsOfDirectory(atPath: store.backupsDirectory.path)
         XCTAssertTrue(files.contains("notes.txt"))
         XCTAssertEqual(files.filter { $0.hasSuffix(".reg") }.count, 30)
+    }
+
+    func testExportDocumentContainsSubtree() throws {
+        let document = try store.exportDocument(keyId: 2)
+        XCTAssertEqual(document.keys.map(\.path), [["Software", "Microsoft"], ["Software", "Microsoft", "Office"]])
+        XCTAssertEqual(document.keys[1].values.first?.name, "")
+        XCTAssertEqual(document.keys[1].values.count, 6)
+    }
+}
+
+/// Opt-in check against a real registry: `TEST_RUNNER_REGEDIT_TEST_DB=/path/to/copy.reg xcodebuild test ...`.
+/// Always point it at a copy – the database is only read, but never test against the live Office registry.
+@MainActor
+final class RealDatabaseTests: XCTestCase {
+    func testExportImportRoundTrip() throws {
+        guard let path = ProcessInfo.processInfo.environment["REGEDIT_TEST_DB"] else {
+            throw XCTSkip("Set REGEDIT_TEST_DB to a copy of MicrosoftRegistrationDB.reg")
+        }
+        let source = RegistryStore()
+        source.open(url: URL(fileURLWithPath: path), readOnly: true)
+        XCTAssertNil(source.openError)
+        let exported = try source.exportDocument(keyId: RegistryKey.rootId)
+        let text = RegFile.serialize(exported)
+        let parsed = try RegFile.parse(try RegFile.decode(RegFile.encode(text)))
+        XCTAssertEqual(parsed, exported)
+
+        let emptyURL = try makeTestDatabase()
+        defer { try? FileManager.default.removeItem(at: emptyURL) }
+        let target = try RegistryDatabase(url: emptyURL)
+        try target.transaction {
+            try target.deleteKey(id: 1)
+        }
+        try RegistryStore.apply(parsed, to: target)
+
+        let imported = RegistryStore()
+        imported.open(url: emptyURL, readOnly: true)
+        XCTAssertEqual(try imported.exportDocument(keyId: RegistryKey.rootId), exported)
     }
 }

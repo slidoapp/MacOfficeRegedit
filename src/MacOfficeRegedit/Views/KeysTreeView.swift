@@ -134,6 +134,11 @@ struct KeyContextMenu: View {
         }
         .disabled(!store.canEdit || key.isRoot)
         Divider()
+        Button("Export…") {
+            store.selectedKeyId = key.id
+            store.exportSelectedKey()
+        }
+        Divider()
         Button("Copy Key Name") {
             store.selectedKeyId = key.id
             store.copyKeyName()

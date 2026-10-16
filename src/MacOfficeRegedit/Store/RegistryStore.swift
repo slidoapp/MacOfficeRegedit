@@ -49,6 +49,11 @@ final class RegistryStore: ObservableObject {
         case keys, values
     }
 
+    struct PendingImport {
+        let url: URL
+        let document: RegFileDocument
+    }
+
     // MARK: - State
 
     @Published private(set) var database: RegistryDatabase?
@@ -77,6 +82,7 @@ final class RegistryStore: ObservableObject {
     @Published private(set) var addressText = RegistryPath.display([])
     @Published var sheet: Sheet?
     @Published var pendingDeletion: Deletion?
+    @Published var pendingImport: PendingImport?
     @Published var alertMessage: String?
 
     @Published var searchResults: [SearchResult] = []
@@ -88,7 +94,7 @@ final class RegistryStore: ObservableObject {
     var hasBackedUp = false
 
     /// A dialog or confirmation is showing; menu commands that would replace it are disabled.
-    var isModalActive: Bool { sheet != nil || pendingDeletion != nil }
+    var isModalActive: Bool { sheet != nil || pendingDeletion != nil || pendingImport != nil }
 
     // MARK: - Opening
 
@@ -110,6 +116,7 @@ final class RegistryStore: ObservableObject {
             // Anything still showing refers to keys of the previous database.
             sheet = nil
             pendingDeletion = nil
+            pendingImport = nil
             self.database = database
             openError = nil
             hasBackedUp = false

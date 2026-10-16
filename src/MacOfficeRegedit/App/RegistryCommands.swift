@@ -37,6 +37,16 @@ struct RegistryCommands: Commands {
         }
 
         CommandGroup(replacing: .importExport) {
+            Button("Import…") {
+                store.beginImport()
+            }
+            .disabled(store.isModalActive || !store.canEdit)
+            Button("Export…") {
+                store.exportSelectedKey()
+            }
+            .keyboardShortcut("e")
+            .disabled(store.isModalActive || store.selectedKeyId == nil)
+            Divider()
             Button("Show Backups in Finder") {
                 store.revealBackups()
             }
