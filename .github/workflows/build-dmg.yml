@@ -9,8 +9,10 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  # Superseded PR builds are cancelled; builds of main always finish so every merge gets a release.
+  # Pull requests share a group per branch and superseded runs are cancelled. Every other run gets its own
+  # group: GitHub keeps only one pending run per group and cancels the rest, which would skip releases of
+  # merges that land while a build of main is running.
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.run_id) }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
@@ -27,7 +29,7 @@ jobs:
       DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
       IS_RELEASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       # Signing is optional and never used for pull requests; see "Releases" in README.md.
-      CAN_SIGN: ${{ github.event_name != 'pull_request' && secrets.DEVELOPER_ID_CERTIFICATE_P12 != '' }}
+      CAN_SIGN: ${{ github.event_name != 'pull_request' && secrets.DEVELOPER_ID_CERTIFICATE_P12 != '' && secrets.DEVELOPER_ID_APPLICATION != '' }}
     steps:
       - uses: actions/checkout@v7
 
@@ -55,7 +57,7 @@ jobs:
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
           security set-keychain-settings -lut 21600 "$KEYCHAIN"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
-          security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -f pkcs12 -A -t cert
+          security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -f pkcs12 -A -t agg
           security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
           security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
           rm "$RUNNER_TEMP/certificate.p12"
@@ -85,17 +87,28 @@ jobs:
           DMG_PATH: ${{ steps.dmg.outputs.dmg_path }}
           VERSION: ${{ steps.dmg.outputs.version }}
           BUILD: ${{ steps.dmg.outputs.build_number }}
+          SIGNING: ${{ steps.dmg.outputs.signing }}
+          NOTARIZED: ${{ steps.dmg.outputs.notarized }}
         run: |
-          if [[ "$CAN_SIGN" == "true" ]]; then
-            NOTES="Signed with a Developer ID certificate."
+          # Describe how the DMG was actually signed, as reported by the build script.
+          if [[ "$SIGNING" == "developer-id" && "$NOTARIZED" == "true" ]]; then
+            NOTES="Signed with a Developer ID certificate and notarized by Apple."
+          elif [[ "$SIGNING" == "developer-id" ]]; then
+            NOTES="Signed with a Developer ID certificate but not notarized, so macOS may ask for confirmation on first launch."
           else
             NOTES="This build is not signed with a Developer ID certificate, so macOS blocks it on first launch. Open it anyway from System Settings ▸ Privacy & Security, or run: \`xattr -dr com.apple.quarantine /Applications/MacOfficeRegedit.app\`"
+          fi
+          # Builds of main can finish out of order, so only the build of main's current head becomes "Latest".
+          LATEST=false
+          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" == "$GITHUB_SHA" ]]; then
+            LATEST=true
           fi
           gh release create "v$VERSION-$BUILD" "$DMG_PATH" \
             --target "$GITHUB_SHA" \
             --title "MacOfficeRegedit $VERSION ($BUILD)" \
             --notes "$NOTES" \
-            --generate-notes
+            --generate-notes \
+            --latest="$LATEST"
 
       - name: Remove signing keychain
         if: always() && env.CAN_SIGN == 'true'

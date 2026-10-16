@@ -13,7 +13,8 @@
 #                                Apple ID, team and app-specific password for notarization;
 #                                only used together with DEVELOPER_ID_APPLICATION.
 #
-# Writes dmg_path, version and build_number to $GITHUB_OUTPUT when running in GitHub Actions.
+# Writes dmg_path, version, build_number, signing (developer-id or adhoc) and notarized (true or false)
+# to $GITHUB_OUTPUT when running in GitHub Actions.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -33,7 +34,10 @@ if [[ -z "$VERSION" ]]; then
 fi
 echo "Building $APP_NAME $VERSION ($BUILD_NUMBER) with $(xcodebuild -version | head -1)"
 
+SIGNING_MODE=adhoc
+NOTARIZED=false
 if [[ -n "${DEVELOPER_ID_APPLICATION:-}" ]]; then
+    SIGNING_MODE=developer-id
     SIGNING=(
         CODE_SIGN_STYLE=Manual
         "CODE_SIGN_IDENTITY=$DEVELOPER_ID_APPLICATION"
@@ -89,6 +93,7 @@ if [[ -n "${DEVELOPER_ID_APPLICATION:-}" ]]; then
         xcrun notarytool submit "$DMG" --wait \
             --apple-id "$NOTARY_APPLE_ID" --team-id "$NOTARY_TEAM_ID" --password "$NOTARY_PASSWORD"
         xcrun stapler staple "$DMG"
+        NOTARIZED=true
     else
         echo "warning: notarization credentials are not set; the DMG is signed but not notarized" >&2
     fi
@@ -102,5 +107,7 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
         echo "dmg_path=$DMG"
         echo "version=$VERSION"
         echo "build_number=$BUILD_NUMBER"
+        echo "signing=$SIGNING_MODE"
+        echo "notarized=$NOTARIZED"
     } >> "$GITHUB_OUTPUT"
 fi
