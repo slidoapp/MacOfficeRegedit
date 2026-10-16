@@ -6,6 +6,21 @@ Office for Mac keeps its Windows-style `HKEY_CURRENT_USER` registry in a SQLite 
 `~/Library/Group Containers/UBF8T346G9.Office/MicrosoftRegistrationDB.reg`. This app browses and edits it
 with a UI modelled after Windows `regedit`.
 
+<p align="center">
+  <img src="docs/screenshots/main-window.png" width="800" alt="Registry Editor showing the Word options key and its values">
+</p>
+
+## Installation
+
+1. Download the DMG of the [latest release](https://github.com/sli-do-playground/MacOfficeRegedit/releases/latest).
+   Every merge to `main` publishes a new one.
+2. Open it and drag **MacOfficeRegedit** to **Applications**.
+3. Releases are not signed with a Developer ID yet, so macOS blocks the first launch. Click **Open Anyway** in
+   *System Settings ▸ Privacy & Security*, or run `xattr -dr com.apple.quarantine /Applications/MacOfficeRegedit.app`.
+
+Requires macOS 13.1 or later and Microsoft Office for Mac (which creates the registry). macOS may ask to allow
+access to data from other apps the first time the app opens Office's registry.
+
 ## Features
 
 - Key tree with an address bar (accepts `Computer\HKEY_CURRENT_USER\…`, `HKCU\…` or relative paths)
@@ -16,6 +31,15 @@ with a UI modelled after Windows `regedit`.
 - Export a key (or the whole hive) to a `.reg` file and import `.reg` files, compatible with Windows `regedit`
 - Copy key name, copy value data
 - Live refresh when Office changes the database; warning while Office apps are running
+
+| Edit a DWORD in hexadecimal or decimal | Binary data as hex, with a UTF-16 text preview |
+| :---: | :---: |
+| <img src="docs/screenshots/edit-dword.png" alt="Edit DWORD (32-bit) Value dialog"> | <img src="docs/screenshots/edit-binary.png" alt="Edit Binary Value dialog showing a hex dump and the decoded JSON text"> |
+
+<p align="center">
+  <img src="docs/screenshots/find.png" width="600" alt="Find dialog listing matches in key names, value names and data"><br>
+  <em>Find searches key names, value names and data, including text stored in binary values.</em>
+</p>
 
 ## Safety
 
@@ -45,6 +69,12 @@ Tests:
   TEST_RUNNER_REGEDIT_TEST_DB=/tmp/copy.reg xcodebuild -project src/MacOfficeRegedit.xcodeproj -scheme MacOfficeRegedit test
   ```
 - `MacOfficeRegeditUITests` – UI tests against a generated fixture database (require granting UI automation access).
+
+### Screenshots
+
+`scripts/update-screenshots.sh` regenerates the images in `docs/screenshots` by running `ScreenshotTests`, a UI test
+that opens a demo registry with made-up values (never a real one, which holds account details). Like the other UI
+tests it needs UI automation access; the screenshots follow the system's light or dark appearance.
 
 ### Building a DMG
 

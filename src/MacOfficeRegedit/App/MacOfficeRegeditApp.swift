@@ -14,6 +14,7 @@ struct MacOfficeRegeditApp: App {
                     openInitialDatabase()
                 }
         }
+        .defaultSize(width: 1100, height: 700)
         .commands {
             RegistryCommands(store: store)
         }
