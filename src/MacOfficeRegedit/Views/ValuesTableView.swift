@@ -19,6 +19,9 @@ struct ValuesTableView: View {
                         .frame(width: 16, height: 16)
                     Text(value.displayName)
                 }
+                .simultaneousGesture(TapGesture().onEnded {
+                    store.focusedPane = .values
+                })
             }
             .width(min: 120, ideal: 220)
             TableColumn("Type", value: \.type.name)
@@ -32,6 +35,18 @@ struct ValuesTableView: View {
         }
         .contextMenu(forSelectionType: RegistryValue.ID.self) { ids in
             menu(for: ids)
+        } primaryAction: { ids in
+            if let value = store.values.first(where: { ids.contains($0.id) }) {
+                store.beginModify(value)
+            }
+        }
+        .onDeleteCommand {
+            store.beginDelete(in: .values)
+        }
+        .onChange(of: store.selectedValueIds) { ids in
+            if !ids.isEmpty {
+                store.focusedPane = .values
+            }
         }
         .accessibilityIdentifier("valuesTable")
     }
@@ -39,7 +54,37 @@ struct ValuesTableView: View {
     @ViewBuilder
     private func menu(for ids: Set<RegistryValue.ID>) -> some View {
         let selected = store.values.filter { ids.contains($0.id) }
-        if !selected.isEmpty {
+        if selected.isEmpty {
+            Menu("New") {
+                Button("Key") {
+                    store.beginNewKey()
+                }
+                Divider()
+                ForEach(RegistryValueType.creatable, id: \.self) { type in
+                    Button(type.newMenuTitle) {
+                        store.beginNewValue(type: type)
+                    }
+                    .disabled(!store.canEditValuesOfSelectedKey)
+                }
+            }
+            .disabled(!store.canEdit)
+        } else {
+            Button("Modify…") {
+                store.beginModify(selected[0])
+            }
+            .disabled(selected.count != 1 || !store.canEdit)
+            Divider()
+            Button("Delete") {
+                store.selectedValueIds = ids
+                store.beginDelete(in: .values)
+            }
+            .disabled(!store.canEdit)
+            Button("Rename") {
+                store.selectedValueIds = ids
+                store.beginRename(in: .values)
+            }
+            .disabled(selected.count != 1 || !store.canEdit)
+            Divider()
             Button("Copy Data") {
                 store.selectedValueIds = ids
                 store.copyValueData()

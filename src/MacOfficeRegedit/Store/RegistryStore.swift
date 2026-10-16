@@ -4,6 +4,49 @@ import Foundation
 /// Application state: the open database, the key tree, the selection and all user operations.
 @MainActor
 final class RegistryStore: ObservableObject {
+    enum Sheet: Identifiable {
+        case editValue(RegistryValue, isNew: Bool)
+        case newKey(parentId: Int64)
+        case renameKey(RegistryKey)
+        case renameValue(RegistryValue)
+
+        var id: String {
+            switch self {
+            case .editValue(let value, let isNew): return "edit-\(value.keyId)-\(value.name)-\(isNew)"
+            case .newKey(let parentId): return "newKey-\(parentId)"
+            case .renameKey(let key): return "renameKey-\(key.id)"
+            case .renameValue(let value): return "renameValue-\(value.keyId)-\(value.name)"
+            }
+        }
+    }
+
+    enum Deletion {
+        case key(RegistryKey)
+        case values([RegistryValue])
+
+        var title: String {
+            switch self {
+            case .key: return "Confirm Key Delete"
+            case .values(let values): return values.count == 1 ? "Confirm Value Delete" : "Confirm Values Delete"
+            }
+        }
+
+        var message: String {
+            switch self {
+            case .key(let key):
+                return "Are you sure you want to permanently delete \"\(key.name)\" and all of its subkeys?"
+            case .values(let values):
+                return values.count == 1
+                    ? "Deleting \"\(values[0].displayName)\" might cause Office to behave unexpectedly. Are you sure you want to permanently delete this value?"
+                    : "Deleting these \(values.count) values might cause Office to behave unexpectedly. Are you sure you want to permanently delete them?"
+            }
+        }
+    }
+
+    enum Pane {
+        case keys, values
+    }
+
     // MARK: - State
 
     @Published private(set) var database: RegistryDatabase?
@@ -23,11 +66,24 @@ final class RegistryStore: ObservableObject {
 
     @Published private(set) var values: [RegistryValue] = []
     @Published var selectedValueIds: Set<RegistryValue.ID> = []
+    /// Pane the user last worked in; used when the keyboard focus can't be determined (see `activePane`).
+    /// Not `@Published`: no view depends on it, and it is set from gestures during view updates.
+    var focusedPane: Pane = .keys
 
-    /// Path of the selected key; updated on selection changes only, so typing in the
+    /// Path of the selected key; updated on selection changes and renames only, so typing in the
     /// address bar is not overwritten by background reloads.
     @Published private(set) var addressText = RegistryPath.display([])
+    @Published var sheet: Sheet?
+    @Published var pendingDeletion: Deletion?
     @Published var alertMessage: String?
+
+    /// Where a copy of the database is saved before the first modification.
+    var backupsDirectory = RegistryStore.defaultBackupsDirectory
+
+    var hasBackedUp = false
+
+    /// A dialog or confirmation is showing; menu commands that would replace it are disabled.
+    var isModalActive: Bool { sheet != nil || pendingDeletion != nil }
 
     // MARK: - Opening
 
@@ -46,8 +102,12 @@ final class RegistryStore: ObservableObject {
     func open(url: URL, readOnly: Bool = false) {
         do {
             let database = try RegistryDatabase(url: url, readOnly: readOnly)
+            // Anything still showing refers to keys of the previous database.
+            sheet = nil
+            pendingDeletion = nil
             self.database = database
             openError = nil
+            hasBackedUp = false
             selectedKeyId = nil
             expandedKeyIds = [RegistryKey.rootId]
             reload()
@@ -174,6 +234,7 @@ final class RegistryStore: ObservableObject {
         selectedKeyId = keyId
         if let valueName {
             selectedValueIds = [RegistryValue.ID(keyId: keyId, name: valueName)]
+            focusedPane = .values
         }
     }
 
@@ -201,7 +262,7 @@ final class RegistryStore: ObservableObject {
         updateAddress()
     }
 
-    private func updateAddress() {
+    func updateAddress() {
         addressText = selectedKeyId.map(path(of:)) ?? RegistryPath.display([])
     }
 

@@ -25,6 +25,22 @@ struct ContentView: View {
         .navigationTitle("Registry Editor")
         .navigationSubtitle(store.isReadOnly && store.database != nil ? "\(store.databaseName) — Read-Only" : store.databaseName)
         .frame(minWidth: 760, minHeight: 420)
+        .sheet(item: $store.sheet) { sheet in
+            SheetContent(sheet: sheet)
+                .environmentObject(store)
+        }
+        .confirmationDialog(
+            store.pendingDeletion?.title ?? "",
+            isPresented: Binding(get: { store.pendingDeletion != nil }, set: { if !$0 { store.pendingDeletion = nil } }),
+            presenting: store.pendingDeletion
+        ) { deletion in
+            Button("Delete", role: .destructive) {
+                store.confirmDeletion(deletion)
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { deletion in
+            Text(deletion.message)
+        }
         .alert(
             "Registry Editor",
             isPresented: Binding(get: { store.alertMessage != nil }, set: { if !$0 { store.alertMessage = nil } }),
@@ -33,6 +49,32 @@ struct ContentView: View {
             Button("OK") {}
         } message: { message in
             Text(message)
+        }
+    }
+}
+
+private struct SheetContent: View {
+    @EnvironmentObject var store: RegistryStore
+    let sheet: RegistryStore.Sheet
+
+    var body: some View {
+        switch sheet {
+        case .editValue(let value, let isNew):
+            ValueEditorSheet(value: value, isNew: isNew) { edited in
+                try store.saveValue(edited, originalName: isNew ? nil : value.name)
+            }
+        case .newKey(let parentId):
+            NameSheet(title: "New Key", prompt: "Key name:", initialName: store.suggestedNewKeyName(parentId: parentId)) { name in
+                try store.createKey(named: name, parentId: parentId)
+            }
+        case .renameKey(let key):
+            NameSheet(title: "Rename Key", prompt: "Key name:", initialName: key.name) { name in
+                try store.renameKey(key, to: name)
+            }
+        case .renameValue(let value):
+            NameSheet(title: "Rename Value", prompt: "Value name:", initialName: value.name) { name in
+                try store.renameValue(value, to: name)
+            }
         }
     }
 }

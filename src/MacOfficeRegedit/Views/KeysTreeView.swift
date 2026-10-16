@@ -23,6 +23,9 @@ struct KeysTreeView: View {
                 selection = selectedKeyId
             }
         }
+        .onDeleteCommand {
+            store.beginDelete(in: .keys)
+        }
         .accessibilityIdentifier("keysTree")
     }
 }
@@ -77,6 +80,10 @@ private struct KeyRowView: View {
         }
         .help(store.path(of: key.id))
         .tag(key.id)
+        // Doesn't interfere with selection; records that the user is working in the tree.
+        .simultaneousGesture(TapGesture().onEnded {
+            store.focusedPane = .keys
+        })
         .contextMenu {
             KeyContextMenu(key: key)
         }
@@ -96,6 +103,33 @@ struct KeyContextMenu: View {
                 store.expandAll(under: key.id)
             }
         }
+        Menu("New") {
+            Button("Key") {
+                store.selectedKeyId = key.id
+                store.beginNewKey()
+            }
+            if !key.isRoot {
+                Divider()
+                ForEach(RegistryValueType.creatable, id: \.self) { type in
+                    Button(type.newMenuTitle) {
+                        store.selectedKeyId = key.id
+                        store.beginNewValue(type: type)
+                    }
+                }
+            }
+        }
+        .disabled(!store.canEdit)
+        Divider()
+        Button("Delete") {
+            store.selectedKeyId = key.id
+            store.beginDelete(in: .keys)
+        }
+        .disabled(!store.canEdit || key.isRoot)
+        Button("Rename") {
+            store.selectedKeyId = key.id
+            store.beginRename(in: .keys)
+        }
+        .disabled(!store.canEdit || key.isRoot)
         Divider()
         Button("Copy Key Name") {
             store.selectedKeyId = key.id

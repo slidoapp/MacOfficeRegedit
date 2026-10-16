@@ -336,10 +336,12 @@ final class RegistryStoreTests: XCTestCase {
     override func setUp() async throws {
         url = try makeTestDatabase()
         store = RegistryStore()
+        store.backupsDirectory = url.deletingPathExtension().appendingPathExtension("backups")
         store.open(url: url)
     }
 
     override func tearDown() async throws {
+        try? FileManager.default.removeItem(at: store.backupsDirectory)
         store = nil
         try? FileManager.default.removeItem(at: url)
     }
@@ -367,5 +369,72 @@ final class RegistryStoreTests: XCTestCase {
         XCTAssertEqual(store.values.map(\.name), ["", "Big", "Blob", "Name", "Negative", "Unset"])
         XCTAssertFalse(store.navigate(to: "Software\\Nope"))
         XCTAssertFalse(store.navigate(to: "HKLM\\Software"))
+    }
+
+    func testEditingFlow() throws {
+        store.navigate(to: "Software\\Microsoft")
+        try store.createKey(named: "Excel", parentId: 2)
+        let excel = try XCTUnwrap(store.selectedKey)
+        XCTAssertEqual(excel.name, "Excel")
+        XCTAssertEqual(store.children(of: 2).map(\.name), ["Excel", "Office"])
+
+        try store.saveValue(RegistryValue(keyId: excel.id, name: "Zoom", type: .REG_DWORD, data: .dword(100)), originalName: nil)
+        XCTAssertEqual(store.values.map(\.name), ["Zoom"])
+        try store.renameValue(store.values[0], to: "Scale")
+        XCTAssertEqual(store.values.map(\.name), ["Scale"])
+
+        try store.renameKey(excel, to: "PowerPoint")
+        XCTAssertEqual(store.addressText, "Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\PowerPoint")
+
+        store.confirmDeletion(.key(try XCTUnwrap(store.selectedKey)))
+        XCTAssertEqual(store.selectedKeyId, 2)
+        XCTAssertEqual(store.children(of: 2).map(\.name), ["Office"])
+        XCTAssertNil(store.alertMessage)
+        // Exactly one backup is made per opened database, before the first change.
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: store.backupsDirectory.path).count, 1)
+    }
+
+    func testStaleDialogCannotModifyReusedKey() throws {
+        store.navigate(to: "Software\\Microsoft\\Office")
+        let stale = try XCTUnwrap(store.selectedKey)
+        // Office deletes the key and creates another one that gets the same id, before we reload.
+        let office = try RegistryDatabase(url: url)
+        try office.deleteKey(id: stale.id)
+        XCTAssertEqual(try office.createKey(named: "Unrelated", parentId: 1).id, stale.id)
+
+        XCTAssertThrowsError(try store.renameKey(stale, to: "Renamed"))
+        XCTAssertThrowsError(try store.saveValue(RegistryValue(keyId: stale.id, name: "x", type: .REG_SZ, data: .string("")), originalName: nil))
+        store.confirmDeletion(.key(stale))
+        XCTAssertNotNil(store.alertMessage)
+        XCTAssertEqual(try office.fetchKey(id: stale.id)?.name, "Unrelated")
+    }
+
+    func testDeleteWithValuesPaneFocusedNeverDeletesKey() {
+        store.navigate(to: "Software\\Microsoft\\Office")
+        store.focusedPane = .values
+        store.selectedValueIds = []
+        store.beginDelete()
+        XCTAssertNil(store.pendingDeletion)
+        store.focusedPane = .keys
+        store.beginDelete()
+        guard case .key(let key) = store.pendingDeletion else {
+            return XCTFail("Expected a key deletion")
+        }
+        XCTAssertEqual(key.name, "Office")
+    }
+
+    func testBackupPruningKeepsForeignFiles() throws {
+        try FileManager.default.createDirectory(at: store.backupsDirectory, withIntermediateDirectories: true)
+        let foreign = store.backupsDirectory.appendingPathComponent("notes.txt")
+        try Data().write(to: foreign)
+        for index in 0..<35 {
+            let old = store.backupsDirectory.appendingPathComponent("Old_2020-01-01_00-00-00-\(String(format: "%03d", index)).reg")
+            try Data().write(to: old)
+            try FileManager.default.setAttributes([.modificationDate: Date(timeIntervalSince1970: Double(index))], ofItemAtPath: old.path)
+        }
+        try store.createKey(named: "Trigger", parentId: 1)
+        let files = try FileManager.default.contentsOfDirectory(atPath: store.backupsDirectory.path)
+        XCTAssertTrue(files.contains("notes.txt"))
+        XCTAssertEqual(files.filter { $0.hasSuffix(".reg") }.count, 30)
     }
 }
