@@ -82,6 +82,17 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(RegistryData.string(fromUTF16LE: RegistryData.utf16LEBytes("hi", terminated: true)), "hi")
     }
 
+    func testStorageEncodingMatchesOffice() {
+        XCTAssertEqual(RegistryDatabase.binding(for: .dword(0x8032F5A4)) as? Int64, -2_144_143_964)
+        XCTAssertEqual(RegistryDatabase.data(from: Int64(-2_144_143_964), type: .REG_DWORD), .dword(0x8032F5A4))
+        XCTAssertEqual(RegistryDatabase.binding(for: .qword(UInt64.max)) as? Int64, -1)
+        XCTAssertEqual(RegistryDatabase.data(from: Int64(-1), type: .REG_QWORD), .qword(UInt64.max))
+        XCTAssertEqual(RegistryDatabase.data(from: nil, type: .REG_SZ), RegistryData.none)
+        XCTAssertEqual(RegistryDatabase.data(from: "a\0b", type: .REG_MULTI_SZ), .multiString(["a", "b"]))
+        let multi = RegistryDatabase.binding(for: .multiString(["a", "b"]))
+        XCTAssertEqual(RegistryDatabase.data(from: multi, type: .REG_MULTI_SZ), .multiString(["a", "b"]))
+    }
+
     func testKeyNameValidation() {
         XCTAssertThrowsError(try RegistryKey.validateName(""))
         XCTAssertThrowsError(try RegistryKey.validateName("a\\b"))
@@ -129,6 +140,153 @@ final class RegistryDatabaseTests: XCTestCase {
         }
     }
 
+    func testCreateRenameAndDeleteKeys() throws {
+        let key = try database.createKey(named: "Excel", parentId: 3)
+        XCTAssertEqual(try database.childKeyId(parentId: 3, name: "excel"), key.id)
+        XCTAssertThrowsError(try database.createKey(named: "EXCEL", parentId: 3)) {
+            XCTAssertEqual($0 as? RegistryError, .keyAlreadyExists("EXCEL"))
+        }
+        XCTAssertThrowsError(try database.createKey(named: "x", parentId: 999))
+
+        let top = try database.createKey(named: "Top", parentId: RegistryKey.rootId)
+        XCTAssertEqual(top.parentId, RegistryKey.rootId)
+
+        try database.renameKey(id: key.id, to: "Word")
+        XCTAssertNil(try database.childKeyId(parentId: 3, name: "Excel"))
+        XCTAssertEqual(try database.childKeyId(parentId: 3, name: "Word"), key.id)
+        // Changing only the case of the name is allowed.
+        try database.renameKey(id: key.id, to: "WORD")
+        XCTAssertThrowsError(try database.renameKey(id: RegistryKey.rootId, to: "x"))
+
+        try database.deleteKey(id: 1)
+        XCTAssertEqual(try database.fetchAllKeys().map(\.name), ["Top"])
+        XCTAssertTrue(try database.fetchAllValues().isEmpty)
+    }
+
+    func testCreateKeyPath() throws {
+        let id = try database.createKeyPath(["software", "Microsoft", "New", "Deep"])
+        let keys = try database.fetchAllKeys()
+        XCTAssertEqual(keys.count, 5)
+        XCTAssertEqual(keys.first { $0.id == id }?.name, "Deep")
+        XCTAssertEqual(try database.createKeyPath([]), RegistryKey.rootId)
+    }
+
+    func testValueOperations() throws {
+        let value = RegistryValue(keyId: 3, name: "Count", type: .REG_DWORD, data: .dword(0xFFFF_FFFF))
+        try database.insertValue(value)
+        XCTAssertEqual(try database.fetchValue(keyId: 3, name: "count")?.data, .dword(0xFFFF_FFFF))
+        XCTAssertThrowsError(try database.insertValue(value)) {
+            XCTAssertEqual($0 as? RegistryError, .valueAlreadyExists("Count"))
+        }
+
+        var updated = value
+        updated.data = .dword(7)
+        try database.updateValue(updated, originalName: "Count")
+        XCTAssertEqual(try database.fetchValue(keyId: 3, name: "Count")?.data, .dword(7))
+
+        try database.renameValue(keyId: 3, from: "Count", to: "Total")
+        XCTAssertNil(try database.fetchValue(keyId: 3, name: "Count"))
+        XCTAssertEqual(try database.fetchValue(keyId: 3, name: "Total")?.data, .dword(7))
+        XCTAssertThrowsError(try database.renameValue(keyId: 3, from: "Total", to: "name"))
+
+        try database.deleteValue(keyId: 3, name: "Total")
+        XCTAssertNil(try database.fetchValue(keyId: 3, name: "Total"))
+        XCTAssertThrowsError(try database.deleteValue(keyId: 3, name: "Total"))
+
+        XCTAssertThrowsError(try database.insertValue(RegistryValue(keyId: RegistryKey.rootId, name: "x", type: .REG_SZ, data: .string(""))))
+        XCTAssertThrowsError(try database.insertValue(RegistryValue(keyId: 999, name: "x", type: .REG_SZ, data: .string(""))))
+    }
+
+    func testAllDataTypesRoundTrip() throws {
+        let samples: [RegistryValue] = [
+            .init(keyId: 2, name: "sz", type: .REG_SZ, data: .string("Příliš žluťoučký")),
+            .init(keyId: 2, name: "expand", type: .REG_EXPAND_SZ, data: .string("%HOME%")),
+            .init(keyId: 2, name: "multi", type: .REG_MULTI_SZ, data: .multiString(["a", "b c"])),
+            .init(keyId: 2, name: "dword", type: .REG_DWORD, data: .dword(0x8000_0000)),
+            .init(keyId: 2, name: "qword", type: .REG_QWORD, data: .qword(0xFFFF_FFFF_FFFF_FFFE)),
+            .init(keyId: 2, name: "bin", type: .REG_BINARY, data: .binary([0, 1, 255])),
+            .init(keyId: 2, name: "none", type: .REG_SZ, data: .none),
+        ]
+        for sample in samples {
+            try database.insertValue(sample)
+        }
+        let reopened = try RegistryDatabase(url: url)
+        for sample in samples {
+            XCTAssertEqual(try reopened.fetchValue(keyId: 2, name: sample.name), sample)
+        }
+    }
+
+    func testWritesTouchKeyWriteTime() throws {
+        let before = try XCTUnwrap(try database.fetchAllKeys().first { $0.id == 3 }?.writeTime)
+        try database.insertValue(RegistryValue(keyId: 3, name: "x", type: .REG_SZ, data: .string("")))
+        let after = try XCTUnwrap(try database.fetchAllKeys().first { $0.id == 3 }?.writeTime)
+        XCTAssertGreaterThan(after, before)
+        XCTAssertEqual(after.timeIntervalSinceNow, 0, accuracy: 60)
+    }
+
+    func testFailedTransactionRollsBackAndLeavesDatabaseUsable() throws {
+        XCTAssertThrowsError(try database.transaction {
+            try database.createKey(named: "Temp", parentId: 3)
+            try database.createKey(named: "Temp", parentId: 3)
+        })
+        XCTAssertNil(try database.childKeyId(parentId: 3, name: "Temp"))
+
+        // A later write must be committed (i.e. no transaction was left open).
+        try database.createKey(named: "After", parentId: 3)
+        let reopened = try RegistryDatabase(url: url, readOnly: true)
+        XCTAssertNotNil(try reopened.childKeyId(parentId: 3, name: "After"))
+    }
+
+    func testTextWithNULsSurvives() throws {
+        // Office could store REG_MULTI_SZ as TEXT with NUL separators; SQLite.swift would cut it at the first NUL.
+        try Connection(url.path).run("INSERT INTO HKEY_CURRENT_USER_values VALUES (3, 'MultiText', 7, CAST(X'6100620000' AS TEXT))")
+        XCTAssertEqual(try database.fetchValue(keyId: 3, name: "MultiText")?.data, .multiString(["a", "b"]))
+
+        let value = RegistryValue(keyId: 3, name: "WithNUL", type: .REG_SZ, data: .string("a\0b"))
+        try database.insertValue(value)
+        XCTAssertEqual(try database.fetchValue(keyId: 3, name: "WithNUL")?.data, .string("a\0b"))
+        let storageClass = try Connection(url.path).scalar("SELECT typeof(value) FROM HKEY_CURRENT_USER_values WHERE name = 'WithNUL'") as? String
+        XCTAssertEqual(storageClass, "text")
+    }
+
+    func testFailedCommitWhileLockedDoesNotLeaveTransactionOpen() throws {
+        let database = try RegistryDatabase(url: url, busyTimeout: 0.2)
+        let office = try Connection(url.path)
+        // Another process (Office) holds a read lock, so our COMMIT cannot get an exclusive lock.
+        try office.run("BEGIN")
+        _ = try office.scalar("SELECT COUNT(*) FROM HKEY_CURRENT_USER")
+        XCTAssertThrowsError(try database.createKey(named: "Blocked", parentId: 3))
+        try office.run("COMMIT")
+
+        // Office must be able to write again, i.e. we released our locks.
+        try office.run("INSERT INTO HKEY_CURRENT_USER (parent_id, name) VALUES (3, 'ByOffice')")
+        XCTAssertNil(try database.childKeyId(parentId: 3, name: "Blocked"))
+
+        // And our next write must actually be committed, not nested in a dangling transaction.
+        try database.createKey(named: "After", parentId: 3)
+        XCTAssertNotNil(try Connection(url.path).scalar("SELECT node_id FROM HKEY_CURRENT_USER WHERE name = 'After'"))
+    }
+
+    func testWriteWaitsForOfficeWriteLock() throws {
+        let office = try Connection(url.path)
+        try office.run("BEGIN IMMEDIATE")
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+            _ = try? office.run("COMMIT")
+        }
+        // busyTimeout (5 s) applies because the write lock is requested up front.
+        try database.createKey(named: "Waited", parentId: 3)
+        XCTAssertNotNil(try database.childKeyId(parentId: 3, name: "Waited"))
+    }
+
+    func testVerifyKeyDetectsReusedId() throws {
+        let office = try RegistryDatabase(url: url)
+        let stale = try XCTUnwrap(try database.fetchKey(id: 3))
+        try office.deleteKey(id: 3)
+        let replacement = try office.createKey(named: "Unrelated", parentId: 1)
+        XCTAssertEqual(replacement.id, 3, "SQLite reuses the highest rowid")
+        XCTAssertThrowsError(try database.verifyKey(stale))
+    }
+
     func testValueIdsMatchSQLiteNameComparison() {
         let nfc = RegistryValue(keyId: 1, name: "caf\u{e9}", type: .REG_SZ, data: .none)
         let nfd = RegistryValue(keyId: 1, name: "cafe\u{301}", type: .REG_SZ, data: .none)
@@ -136,6 +294,24 @@ final class RegistryDatabaseTests: XCTestCase {
         XCTAssertEqual(RegistryValue.ID(keyId: 1, name: "Lcid"), RegistryValue.ID(keyId: 1, name: "LCID"))
         // SQLite's NOCASE folds ASCII only.
         XCTAssertNotEqual(RegistryValue.ID(keyId: 1, name: "Č"), RegistryValue.ID(keyId: 1, name: "č"))
+    }
+
+    func testReadOnlyRejectsWrites() throws {
+        let readOnly = try RegistryDatabase(url: url, readOnly: true)
+        XCTAssertTrue(readOnly.isReadOnly)
+        XCTAssertThrowsError(try readOnly.createKey(named: "x", parentId: 3)) {
+            XCTAssertEqual($0 as? RegistryError, .readOnly)
+        }
+    }
+
+    func testBackupCreatesConsistentCopy() throws {
+        let destination = FileManager.default.temporaryDirectory
+            .appendingPathComponent("backup-\(UUID().uuidString)/copy.reg")
+        defer { try? FileManager.default.removeItem(at: destination.deletingLastPathComponent()) }
+        try database.backup(to: destination)
+        let copy = try RegistryDatabase(url: destination, readOnly: true)
+        XCTAssertEqual(try copy.fetchAllKeys().count, 3)
+        XCTAssertEqual(try copy.fetchAllValues().count, 6)
     }
 }
 
