@@ -1,56 +1,28 @@
-//
-//  MacOfficeRegeditTests.swift
-//  MacOfficeRegeditTests
-//
-//  Created by dpalo on 17/02/2023.
-//
-
+import SQLite
 import XCTest
 @testable import MacOfficeRegedit
 
-final class MacOfficeRegeditTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testDwordHexRenderingPreservesAll32Bits() throws {
-        let value = RegistryValue(
-            nodeId: 1,
-            name: "DwordValue",
-            type: .REG_DWORD,
-            value: Int64(0x89abcdef)
-        )
-
-        let item = RegistryValueTableItem(fromRegValue: value)
-
-        XCTAssertEqual(item.data, "0x89abcdef (2309737967)")
-    }
-
-    func testQwordHexRenderingPreservesUpper32Bits() throws {
-        let value = RegistryValue(
-            nodeId: 1,
-            name: "QwordValue",
-            type: .REG_QWORD,
-            value: Int64(0x0123456789abcdef)
-        )
-
-        let item = RegistryValueTableItem(fromRegValue: value)
-
-        XCTAssertEqual(item.data, "0x0123456789abcdef (81985529216486895)")
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+/// Creates an empty database with the schema Office uses.
+func makeTestDatabase(file: StaticString = #filePath) throws -> URL {
+    let url = FileManager.default.temporaryDirectory
+        .appendingPathComponent("MacOfficeRegeditTests-\(UUID().uuidString).reg")
+    let connection = try Connection(url.path)
+    try connection.execute("""
+        CREATE TABLE HKEY_CURRENT_USER (node_id INTEGER PRIMARY KEY ASC, parent_id, name TEXT COLLATE nocase, write_time, UNIQUE (parent_id, name));
+        CREATE TABLE HKEY_CURRENT_USER_values (node_id INTEGER, name TEXT COLLATE nocase, type INTEGER, value, UNIQUE (node_id, name));
+        CREATE TABLE db_metadata (schema_ver INTEGER, min_schema_ver INTEGER, cache_table BINARY);
+        INSERT INTO db_metadata VALUES (6, 6, NULL);
+        INSERT INTO HKEY_CURRENT_USER VALUES (1, -1, 'Software', X'30E52D090E08DD01');
+        INSERT INTO HKEY_CURRENT_USER VALUES (2, 1, 'Microsoft', X'30E52D090E08DD01');
+        INSERT INTO HKEY_CURRENT_USER VALUES (3, 2, 'Office', X'30E52D090E08DD01');
+        INSERT INTO HKEY_CURRENT_USER_values VALUES (3, 'Name', 1, 'Office');
+        INSERT INTO HKEY_CURRENT_USER_values VALUES (3, 'Negative', 4, -2144143964);
+        INSERT INTO HKEY_CURRENT_USER_values VALUES (3, 'Big', 11, 9174090607676276057);
+        INSERT INTO HKEY_CURRENT_USER_values VALUES (3, 'Blob', 3, X'7B002200');
+        INSERT INTO HKEY_CURRENT_USER_values VALUES (3, '', 1, 'default');
+        INSERT INTO HKEY_CURRENT_USER_values VALUES (3, 'Unset', 1, NULL);
+        """)
+    return url
 }
 
 final class ModelTests: XCTestCase {
@@ -92,10 +64,119 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(RegistryData.multiString(["a", "b"]).displayString, "a b")
     }
 
+    /// Ported from PR #1: hex rendering must keep all 32 bits of a DWORD and the upper 32 bits of a QWORD.
+    func testDwordHexRenderingPreservesAll32Bits() {
+        let data = RegistryDatabase.data(from: Int64(0x89abcdef), type: .REG_DWORD)
+        XCTAssertEqual(data.displayString, "0x89abcdef (2309737967)")
+    }
+
+    func testQwordHexRenderingPreservesUpper32Bits() {
+        let data = RegistryDatabase.data(from: Int64(0x0123456789abcdef), type: .REG_QWORD)
+        XCTAssertEqual(data.displayString, "0x0123456789abcdef (81985529216486895)")
+    }
+
     func testUTF16Helpers() {
         let bytes = RegistryData.multiStringBytes(["ab", "č"])
         XCTAssertEqual(bytes, [0x61, 0, 0x62, 0, 0, 0, 0x0D, 0x01, 0, 0, 0, 0])
         XCTAssertEqual(RegistryData.multiString(fromUTF16LE: bytes), ["ab", "č"])
         XCTAssertEqual(RegistryData.string(fromUTF16LE: RegistryData.utf16LEBytes("hi", terminated: true)), "hi")
+    }
+
+    func testKeyNameValidation() {
+        XCTAssertThrowsError(try RegistryKey.validateName(""))
+        XCTAssertThrowsError(try RegistryKey.validateName("a\\b"))
+        XCTAssertNoThrow(try RegistryKey.validateName("16.0"))
+    }
+}
+
+final class RegistryDatabaseTests: XCTestCase {
+    private var url: URL!
+    private var database: RegistryDatabase!
+
+    override func setUpWithError() throws {
+        url = try makeTestDatabase()
+        database = try RegistryDatabase(url: url)
+    }
+
+    override func tearDownWithError() throws {
+        database = nil
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    func testReadsKeysAndValues() throws {
+        let keys = try database.fetchAllKeys()
+        XCTAssertEqual(keys.map(\.name).sorted(), ["Microsoft", "Office", "Software"])
+        XCTAssertNotNil(keys.first?.writeTime)
+
+        let values = Dictionary(uniqueKeysWithValues: try database.fetchValues(keyId: 3).map { ($0.name, $0) })
+        XCTAssertEqual(values["Name"]?.data, .string("Office"))
+        XCTAssertEqual(values["Negative"]?.data, .dword(0x8032F5A4))
+        XCTAssertEqual(values["Big"]?.data, .qword(9_174_090_607_676_276_057))
+        XCTAssertEqual(values["Blob"]?.data, .binary([0x7B, 0, 0x22, 0]))
+        XCTAssertEqual(values[""]?.data, .string("default"))
+        XCTAssertEqual(values["Unset"]?.data, RegistryData.none)
+    }
+
+    func testRejectsNonRegistryDatabase() throws {
+        let other = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).sqlite")
+        defer { try? FileManager.default.removeItem(at: other) }
+        try Connection(other.path).execute("CREATE TABLE foo (a)")
+        XCTAssertThrowsError(try RegistryDatabase(url: other))
+        XCTAssertThrowsError(try RegistryDatabase(url: other.appendingPathExtension("missing"))) { error in
+            guard case RegistryError.databaseNotFound = error else {
+                return XCTFail("Unexpected error \(error)")
+            }
+        }
+    }
+
+    func testValueIdsMatchSQLiteNameComparison() {
+        let nfc = RegistryValue(keyId: 1, name: "caf\u{e9}", type: .REG_SZ, data: .none)
+        let nfd = RegistryValue(keyId: 1, name: "cafe\u{301}", type: .REG_SZ, data: .none)
+        XCTAssertNotEqual(nfc.id, nfd.id)
+        XCTAssertEqual(RegistryValue.ID(keyId: 1, name: "Lcid"), RegistryValue.ID(keyId: 1, name: "LCID"))
+        // SQLite's NOCASE folds ASCII only.
+        XCTAssertNotEqual(RegistryValue.ID(keyId: 1, name: "Č"), RegistryValue.ID(keyId: 1, name: "č"))
+    }
+}
+
+@MainActor
+final class RegistryStoreTests: XCTestCase {
+    private var url: URL!
+    private var store: RegistryStore!
+
+    override func setUp() async throws {
+        url = try makeTestDatabase()
+        store = RegistryStore()
+        store.open(url: url)
+    }
+
+    override func tearDown() async throws {
+        store = nil
+        try? FileManager.default.removeItem(at: url)
+    }
+
+    func testOpenBuildsTreeAndSelectsRoot() {
+        XCTAssertNil(store.openError)
+        XCTAssertEqual(store.selectedKeyId, RegistryKey.rootId)
+        XCTAssertEqual(store.children(of: RegistryKey.rootId).map(\.name), ["Software"])
+        XCTAssertEqual(store.path(of: 3), "Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Office")
+        XCTAssertTrue(store.values.isEmpty)
+    }
+
+    func testOpenMissingDatabaseReportsError() {
+        store.open(url: url.appendingPathExtension("missing"))
+        XCTAssertNotNil(store.openError)
+        XCTAssertNil(store.database)
+    }
+
+    func testNavigateExpandsAncestorsAndLoadsValues() {
+        XCTAssertTrue(store.navigate(to: "hkcu\\software\\MICROSOFT\\office"))
+        XCTAssertEqual(store.selectedKeyId, 3)
+        XCTAssertTrue(store.expandedKeyIds.isSuperset(of: [RegistryKey.rootId, 1, 2]))
+        XCTAssertEqual(store.addressText, "Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Office")
+        // Default value first, then by name.
+        XCTAssertEqual(store.values.map(\.name), ["", "Big", "Blob", "Name", "Negative", "Unset"])
+        XCTAssertFalse(store.navigate(to: "Software\\Nope"))
+        XCTAssertFalse(store.navigate(to: "HKLM\\Software"))
     }
 }
