@@ -293,6 +293,10 @@ final class RegFileTests: XCTestCase {
             ("[HKCU]\n\"a\"=hex:00,\\\n  zz", .invalidHex(line: 4)),
             ("[HKCU]\n\"a\"=hex(b):00,01", .invalidDataLength(line: 4, type: .REG_QWORD, expected: 8, actual: 2)),
             ("[HKCU]\n\"a\"=hex(4):00", .invalidDataLength(line: 4, type: .REG_DWORD, expected: 4, actual: 1)),
+            ("[HKCU]\n\"a\"=hex(5):00,01", .invalidDataLength(line: 4, type: .REG_DWORD_BIG_ENDIAN, expected: 4, actual: 2)),
+            ("[HKCU]\n\"a\"=hex(1):41,00,00", .oddUTF16Length(line: 4, type: .REG_SZ, actual: 3)),
+            ("[HKCU]\n\"a\"=hex(2):41", .oddUTF16Length(line: 4, type: .REG_EXPAND_SZ, actual: 1)),
+            ("[HKCU]\n\"a\"=hex(7):61,00,00,00,00", .oddUTF16Length(line: 4, type: .REG_MULTI_SZ, actual: 5)),
             ("[HKCU]\n\"a\"=hex(c):00", .unknownValueType(line: 4, type: "hex(c)")),
         ]
         for (body, expected) in cases {

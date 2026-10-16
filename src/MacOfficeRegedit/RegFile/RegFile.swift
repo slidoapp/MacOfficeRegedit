@@ -32,6 +32,7 @@ enum RegFileError: LocalizedError, Equatable {
     case invalidDword(line: Int)
     case invalidHex(line: Int)
     case invalidDataLength(line: Int, type: RegistryValueType, expected: Int, actual: Int)
+    case oddUTF16Length(line: Int, type: RegistryValueType, actual: Int)
     case unknownValueType(line: Int, type: String)
 
     var errorDescription: String? {
@@ -56,6 +57,8 @@ enum RegFileError: LocalizedError, Equatable {
             return "Line \(line): The binary data must be comma-separated hexadecimal bytes."
         case .invalidDataLength(let line, let type, let expected, let actual):
             return "Line \(line): \(type.name) data must be \(expected) bytes long, not \(actual)."
+        case .oddUTF16Length(let line, let type, let actual):
+            return "Line \(line): \(type.name) data is UTF-16 text and must have an even number of bytes, not \(actual)."
         case .unknownValueType(let line, let type):
             return "Line \(line): The value type \(type) is not supported."
         }
@@ -303,16 +306,23 @@ enum RegFile {
                 return .none
             }
             switch type {
-            case .REG_SZ, .REG_EXPAND_SZ:
-                return .string(RegistryData.string(fromUTF16LE: bytes))
-            case .REG_MULTI_SZ:
-                return .multiString(RegistryData.multiString(fromUTF16LE: bytes))
+            case .REG_SZ, .REG_EXPAND_SZ, .REG_MULTI_SZ:
+                // A dangling byte would be silently dropped when decoding, truncating the text.
+                guard bytes.count.isMultiple(of: 2) else {
+                    throw RegFileError.oddUTF16Length(line: line, type: type, actual: bytes.count)
+                }
+                return type == .REG_MULTI_SZ
+                    ? .multiString(RegistryData.multiString(fromUTF16LE: bytes))
+                    : .string(RegistryData.string(fromUTF16LE: bytes))
             case .REG_DWORD:
                 guard bytes.count == 4 else {
                     throw RegFileError.invalidDataLength(line: line, type: type, expected: 4, actual: bytes.count)
                 }
                 return .dword(bytes.reversed().reduce(0) { $0 << 8 | UInt32($1) })
-            case .REG_DWORD_BIG_ENDIAN where bytes.count == 4:
+            case .REG_DWORD_BIG_ENDIAN:
+                guard bytes.count == 4 else {
+                    throw RegFileError.invalidDataLength(line: line, type: type, expected: 4, actual: bytes.count)
+                }
                 return .dword(bytes.reduce(0) { $0 << 8 | UInt32($1) })
             case .REG_QWORD:
                 guard bytes.count == 8 else {
