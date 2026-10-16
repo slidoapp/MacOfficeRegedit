@@ -49,7 +49,29 @@ struct ValuesTableView: View {
                 store.focusedPane = .values
             }
         }
+        .overlay {
+            emptyState
+                // Let clicks through, so the empty table's context menu (New ▸) still works.
+                .allowsHitTesting(false)
+        }
         .accessibilityIdentifier("valuesTable")
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        if store.selectedKey?.isRoot == true {
+            ContentUnavailableView(
+                RegistryPath.hive,
+                systemImage: "folder",
+                description: Text("Select a key to see its values.")
+            )
+        } else if store.selectedKey != nil, store.values.isEmpty {
+            ContentUnavailableView(
+                "No Values",
+                systemImage: "tray",
+                description: Text(store.canEdit ? "Right-click to add a value." : "This key has no values.")
+            )
+        }
     }
 
     @ViewBuilder

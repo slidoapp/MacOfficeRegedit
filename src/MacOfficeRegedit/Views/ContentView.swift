@@ -186,27 +186,18 @@ private struct DatabaseUnavailableView: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "externaldrive.badge.xmark")
-                .font(.system(size: 48))
-                .foregroundColor(.secondary)
-            Text("Cannot Open Registry")
-                .font(.title2)
+        ContentUnavailableView {
+            Label("Cannot Open Registry", systemImage: "externaldrive.badge.xmark")
+        } description: {
             Text(message)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.secondary)
-                .frame(maxWidth: 420)
-            HStack {
-                Button("Try Again") {
-                    store.openOfficeRegistry()
-                }
-                Button("Open Other Database…") {
-                    store.chooseDatabase()
-                }
+        } actions: {
+            Button("Try Again") {
+                store.openOfficeRegistry()
+            }
+            Button("Open Other Database…") {
+                store.chooseDatabase()
             }
         }
-        .padding(40)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
