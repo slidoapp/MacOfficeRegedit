@@ -116,9 +116,17 @@ struct ValuesTableView: View {
     }
 }
 
-struct ValuesTableView_Previews: PreviewProvider {
-    static var previews: some View {
-        ValuesTableView()
-            .environment(RegistryStore())
-    }
+// RegistryStore.preview() exists in Debug builds only.
+#if DEBUG
+#Preview("Values") {
+    ValuesTableView()
+        .environment(RegistryStore.preview())
+        .frame(width: 700, height: 300)
 }
+
+#Preview("No values") {
+    ValuesTableView()
+        .environment(RegistryStore.preview(selecting: "Software\\Microsoft\\Office\\16.0"))
+        .frame(width: 700, height: 300)
+}
+#endif

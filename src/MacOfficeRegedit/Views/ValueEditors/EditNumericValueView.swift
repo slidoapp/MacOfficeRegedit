@@ -103,12 +103,18 @@ struct EditNumericValueView: View {
     }
 }
 
-struct EditNumericValueView_Previews: PreviewProvider {
-    static var previews: some View {
-        EditNumericValueView(
-            value: RegistryValue(keyId: 1, name: "Lcid", type: .REG_DWORD, data: .dword(1051)),
-            isNew: false,
-            onCommit: { _ in }
-        )
-    }
+#Preview("DWORD") {
+    EditNumericValueView(
+        value: RegistryValue(keyId: 1, name: "Lcid", type: .REG_DWORD, data: .dword(1051)),
+        isNew: false,
+        onCommit: { _ in }
+    )
+}
+
+#Preview("QWORD") {
+    EditNumericValueView(
+        value: RegistryValue(keyId: 1, name: "LastUpdateCheck", type: .REG_QWORD, data: .qword(134_364_444_600_000_000)),
+        isNew: false,
+        onCommit: { _ in }
+    )
 }

@@ -201,10 +201,19 @@ private struct DatabaseUnavailableView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .environment(RegistryStore())
-            .environment(OfficeAppsMonitor())
-    }
+// RegistryStore.preview() exists in Debug builds only.
+#if DEBUG
+#Preview("Registry") {
+    ContentView()
+        .environment(RegistryStore.preview())
+        .environment(OfficeAppsMonitor())
 }
+
+#Preview("Cannot open") {
+    let store = RegistryStore()
+    store.open(url: URL(fileURLWithPath: "/nonexistent/MicrosoftRegistrationDB.reg"))
+    return ContentView()
+        .environment(store)
+        .environment(OfficeAppsMonitor())
+}
+#endif

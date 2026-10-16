@@ -536,6 +536,13 @@ final class RegistryStoreTests: XCTestCase {
         XCTAssertEqual(store.addressText, "Computer\\HKEY_CURRENT_USER\\Software\\Microsoft", "Selection is kept")
     }
 
+    func testPreviewStoreHasDemoData() {
+        let preview = RegistryStore.preview()
+        XCTAssertNil(preview.alertMessage)
+        XCTAssertEqual(preview.addressText, "Computer\\HKEY_CURRENT_USER\\Software\\Microsoft\\Office\\16.0\\Word\\Options")
+        XCTAssertEqual(preview.values.count, 7)
+    }
+
     func testExportDocumentContainsSubtree() throws {
         let document = try store.exportDocument(keyId: 2)
         XCTAssertEqual(document.keys.map(\.path), [["Software", "Microsoft"], ["Software", "Microsoft", "Office"]])

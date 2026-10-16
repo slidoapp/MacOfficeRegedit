@@ -146,9 +146,11 @@ struct KeyContextMenu: View {
     }
 }
 
-struct KeysTreeView_Previews: PreviewProvider {
-    static var previews: some View {
-        KeysTreeView()
-            .environment(RegistryStore())
-    }
+// RegistryStore.preview() exists in Debug builds only.
+#if DEBUG
+#Preview {
+    KeysTreeView()
+        .environment(RegistryStore.preview())
+        .frame(width: 280, height: 400)
 }
+#endif

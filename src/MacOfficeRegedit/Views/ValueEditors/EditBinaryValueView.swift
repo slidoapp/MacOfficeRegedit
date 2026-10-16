@@ -113,22 +113,23 @@ struct EditBinaryValueView: View {
     }
 }
 
-struct EditBinaryValueView_Previews: PreviewProvider {
-    static var previews: some View {
-        EditBinaryValueView(
-            value: RegistryValue(keyId: 1, name: "Data", type: .REG_BINARY, data: .binary(Array(0...40))),
-            isNew: false,
-            onCommit: { _ in }
-        )
-        EditBinaryValueView(
-            value: RegistryValue(
-                keyId: 1,
-                name: "Settings",
-                type: .REG_BINARY,
-                data: .binary(RegistryData.utf16LEBytes("{\"enabled\":true,\"items\":[1,2,3]}", terminated: true))
-            ),
-            isNew: true,
-            onCommit: { _ in }
-        )
-    }
+#Preview("Binary") {
+    EditBinaryValueView(
+        value: RegistryValue(keyId: 1, name: "Data", type: .REG_BINARY, data: .binary(Array(0...40))),
+        isNew: false,
+        onCommit: { _ in }
+    )
+}
+
+#Preview("UTF-16 text") {
+    EditBinaryValueView(
+        value: RegistryValue(
+            keyId: 1,
+            name: "Settings",
+            type: .REG_BINARY,
+            data: .binary(RegistryData.utf16LEBytes("{\"enabled\":true,\"items\":[1,2,3]}", terminated: true))
+        ),
+        isNew: true,
+        onCommit: { _ in }
+    )
 }
