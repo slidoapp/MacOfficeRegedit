@@ -119,6 +119,9 @@ struct KeyContextMenu: View {
             }
         }
         .disabled(!store.canEdit)
+        Button("Find…") {
+            store.sheet = .find
+        }
         Divider()
         Button("Delete") {
             store.selectedKeyId = key.id

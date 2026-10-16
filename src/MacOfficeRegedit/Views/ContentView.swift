@@ -75,6 +75,8 @@ private struct SheetContent: View {
             NameSheet(title: "Rename Value", prompt: "Value name:", initialName: value.name) { name in
                 try store.renameValue(value, to: name)
             }
+        case .find:
+            FindView()
         }
     }
 }

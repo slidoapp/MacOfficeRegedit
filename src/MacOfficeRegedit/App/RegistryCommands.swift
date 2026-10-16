@@ -67,6 +67,19 @@ struct RegistryCommands: Commands {
             .disabled(store.isModalActive || store.selectedKeyId == nil)
         }
 
+        CommandGroup(after: .textEditing) {
+            Button("Find…") {
+                store.sheet = .find
+            }
+            .keyboardShortcut("f")
+            .disabled(store.isModalActive || store.database == nil)
+            Button("Find Next") {
+                store.findNext()
+            }
+            .keyboardShortcut("g")
+            .disabled(store.isModalActive || !store.canFindNext)
+        }
+
         CommandGroup(after: .toolbar) {
             Button("Refresh") {
                 store.reload()

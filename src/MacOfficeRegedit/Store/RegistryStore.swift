@@ -9,6 +9,7 @@ final class RegistryStore: ObservableObject {
         case newKey(parentId: Int64)
         case renameKey(RegistryKey)
         case renameValue(RegistryValue)
+        case find
 
         var id: String {
             switch self {
@@ -16,6 +17,7 @@ final class RegistryStore: ObservableObject {
             case .newKey(let parentId): return "newKey-\(parentId)"
             case .renameKey(let key): return "renameKey-\(key.id)"
             case .renameValue(let value): return "renameValue-\(value.keyId)-\(value.name)"
+            case .find: return "find"
             }
         }
     }
@@ -77,6 +79,9 @@ final class RegistryStore: ObservableObject {
     @Published var pendingDeletion: Deletion?
     @Published var alertMessage: String?
 
+    @Published var searchResults: [SearchResult] = []
+    var searchResultIndex = -1
+
     /// Where a copy of the database is saved before the first modification.
     var backupsDirectory = RegistryStore.defaultBackupsDirectory
 
@@ -108,6 +113,7 @@ final class RegistryStore: ObservableObject {
             self.database = database
             openError = nil
             hasBackedUp = false
+            searchResults = []
             selectedKeyId = nil
             expandedKeyIds = [RegistryKey.rootId]
             reload()

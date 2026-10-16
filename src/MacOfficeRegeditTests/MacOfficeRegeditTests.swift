@@ -371,6 +371,24 @@ final class RegistryStoreTests: XCTestCase {
         XCTAssertFalse(store.navigate(to: "HKLM\\Software"))
     }
 
+    func testSearch() {
+        store.search(.init(text: "office"))
+        XCTAssertEqual(store.searchResults.map(\.kind), [.key, .data])
+        XCTAssertEqual(store.searchResults.last?.valueName, "Name")
+
+        store.search(.init(text: "{\"", keys: false, values: false, data: true))
+        XCTAssertEqual(store.searchResults.map(\.valueName), ["Blob"])
+
+        store.search(.init(text: "Micro", matchWholeString: true))
+        XCTAssertTrue(store.searchResults.isEmpty)
+
+        store.search(.init(text: "office"))
+        store.findNext()
+        XCTAssertEqual(store.selectedKeyId, 3)
+        store.findNext()
+        XCTAssertEqual(store.selectedValueIds, [RegistryValue.ID(keyId: 3, name: "Name")])
+    }
+
     func testEditingFlow() throws {
         store.navigate(to: "Software\\Microsoft")
         try store.createKey(named: "Excel", parentId: 2)
@@ -421,6 +439,15 @@ final class RegistryStoreTests: XCTestCase {
             return XCTFail("Expected a key deletion")
         }
         XCTAssertEqual(key.name, "Office")
+    }
+
+    func testOpeningAnotherDatabaseDismissesDialogs() throws {
+        store.navigate(to: "Software\\Microsoft\\Office")
+        store.beginDelete()
+        store.sheet = .find
+        store.open(url: url)
+        XCTAssertNil(store.sheet)
+        XCTAssertNil(store.pendingDeletion)
     }
 
     func testBackupPruningKeepsForeignFiles() throws {
