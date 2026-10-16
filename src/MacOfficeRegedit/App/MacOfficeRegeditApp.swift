@@ -20,12 +20,15 @@ struct MacOfficeRegeditApp: App {
     }
 
     /// `-RegistryDatabasePath <path>` opens another database (e.g. a copy, for testing);
-    /// `-RegistryReadOnly YES` opens it read-only.
+    /// `-RegistryReadOnly YES` opens it read-only; `-RegistryBackupsPath <path>` changes where backups go.
     private func openInitialDatabase() {
         guard store.database == nil, store.openError == nil else {
             return
         }
         let defaults = UserDefaults.standard
+        if let path = defaults.string(forKey: "RegistryBackupsPath") {
+            store.backupsDirectory = URL(fileURLWithPath: (path as NSString).expandingTildeInPath, isDirectory: true)
+        }
         if let path = defaults.string(forKey: "RegistryDatabasePath") {
             store.open(url: URL(fileURLWithPath: (path as NSString).expandingTildeInPath), readOnly: defaults.bool(forKey: "RegistryReadOnly"))
         } else if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
