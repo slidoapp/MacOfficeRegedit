@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var store: RegistryStore
+    @EnvironmentObject var officeApps: OfficeAppsMonitor
 
     var body: some View {
         Group {
@@ -15,6 +16,10 @@ struct ContentView: View {
                     VStack(spacing: 0) {
                         AddressBar()
                         Divider()
+                        if !officeApps.runningApps.isEmpty && store.isOfficeRegistry {
+                            OfficeRunningBanner(apps: officeApps.runningApps)
+                            Divider()
+                        }
                         ValuesTableView()
                         Divider()
                         StatusBar()
@@ -131,6 +136,24 @@ private struct AddressBar: View {
     }
 }
 
+private struct OfficeRunningBanner: View {
+    let apps: [String]
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.orange)
+            Text("\(ListFormatter.localizedString(byJoining: apps)) \(apps.count == 1 ? "is" : "are") running. Office reads these settings at launch and may overwrite changes when it quits — quit Office apps before editing.")
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer()
+        }
+        .font(.callout)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(Color.orange.opacity(0.12))
+    }
+}
+
 private struct StatusBar: View {
     @EnvironmentObject var store: RegistryStore
 
@@ -188,5 +211,6 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
             .environmentObject(RegistryStore())
+            .environmentObject(OfficeAppsMonitor())
     }
 }

@@ -141,6 +141,9 @@ extension RegistryStore {
     /// opened before Office changed the registry can't modify an unrelated key that reused the id.
     @discardableResult
     func write<T>(verifying keyId: Int64? = nil, _ operation: (RegistryDatabase) throws -> T) throws -> T {
+        if reopenIfReplaced() {
+            throw RegistryError.invalidData("Office replaced the registry database, so it has been reloaded. Nothing was changed; please try again.")
+        }
         guard let database else {
             throw RegistryError.databaseNotFound(RegistryDatabase.officeRegistryURL)
         }

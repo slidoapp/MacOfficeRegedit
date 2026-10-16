@@ -92,7 +92,7 @@ struct RegistryCommands: Commands {
 
         CommandGroup(after: .toolbar) {
             Button("Refresh") {
-                store.reload()
+                store.refresh()
             }
             .keyboardShortcut("r")
             .disabled(store.isModalActive || store.database == nil)

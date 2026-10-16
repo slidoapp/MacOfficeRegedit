@@ -3,11 +3,13 @@ import SwiftUI
 @main
 struct MacOfficeRegeditApp: App {
     @StateObject private var store = RegistryStore()
+    @StateObject private var officeApps = OfficeAppsMonitor()
 
     var body: some Scene {
         Window("Registry Editor", id: "main") {
             ContentView()
                 .environmentObject(store)
+                .environmentObject(officeApps)
                 .task {
                     openInitialDatabase()
                 }

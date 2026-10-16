@@ -21,8 +21,15 @@ final class RegistryDatabase {
             .appendingPathComponent("Library/Group Containers/UBF8T346G9.Office/MicrosoftRegistrationDB.reg")
     }
 
+    struct FileIdentity: Equatable {
+        let device: dev_t
+        let inode: ino_t
+    }
+
     let url: URL
     let isReadOnly: Bool
+    /// Identity of the opened file, to detect Office replacing it (or retargeting the symlink).
+    let fileIdentity: FileIdentity?
     private let connection: Connection
     private var transactionDepth = 0
 
@@ -40,11 +47,20 @@ final class RegistryDatabase {
         }
 
         self.url = resolvedURL
+        self.fileIdentity = RegistryDatabase.fileIdentity(of: resolvedURL)
         self.isReadOnly = readOnly || !FileManager.default.isWritableFile(atPath: resolvedURL.path)
         self.connection = try Connection(resolvedURL.path, readonly: isReadOnly)
         self.connection.busyTimeout = busyTimeout
 
         try validateSchema()
+    }
+
+    static func fileIdentity(of url: URL) -> FileIdentity? {
+        var info = stat()
+        guard stat(url.resolvingSymlinksInPath().path, &info) == 0 else {
+            return nil
+        }
+        return FileIdentity(device: info.st_dev, inode: info.st_ino)
     }
 
     private func validateSchema() throws {

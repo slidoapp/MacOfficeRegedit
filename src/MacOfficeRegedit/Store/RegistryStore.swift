@@ -80,9 +80,15 @@ final class RegistryStore: ObservableObject {
     /// Path of the selected key; updated on selection changes and renames only, so typing in the
     /// address bar is not overwritten by background reloads.
     @Published private(set) var addressText = RegistryPath.display([])
-    @Published var sheet: Sheet?
-    @Published var pendingDeletion: Deletion?
-    @Published var pendingImport: PendingImport?
+    @Published var sheet: Sheet? {
+        didSet { resumeDeferredReload() }
+    }
+    @Published var pendingDeletion: Deletion? {
+        didSet { resumeDeferredReload() }
+    }
+    @Published var pendingImport: PendingImport? {
+        didSet { resumeDeferredReload() }
+    }
     @Published var alertMessage: String?
 
     @Published var searchResults: [SearchResult] = []
@@ -91,7 +97,12 @@ final class RegistryStore: ObservableObject {
     /// Where a copy of the database is saved before the first modification.
     var backupsDirectory = RegistryStore.defaultBackupsDirectory
 
+    private var watcher: FileWatcher?
     var hasBackedUp = false
+    /// The URL as opened (e.g. the Office symlink), to detect when it starts pointing to another file.
+    private var openedURL: URL?
+    /// External changes are not applied while a dialog is open, since it holds ids and data from before.
+    private var needsReload = false
 
     /// A dialog or confirmation is showing; menu commands that would replace it are disabled.
     var isModalActive: Bool { sheet != nil || pendingDeletion != nil || pendingImport != nil }
@@ -117,16 +128,24 @@ final class RegistryStore: ObservableObject {
             sheet = nil
             pendingDeletion = nil
             pendingImport = nil
+            needsReload = false
             self.database = database
+            openedURL = url
             openError = nil
             hasBackedUp = false
             searchResults = []
             selectedKeyId = nil
             expandedKeyIds = [RegistryKey.rootId]
+            watcher = FileWatcher(url: database.url) { [weak self] in
+                Task { @MainActor in
+                    self?.externalChange()
+                }
+            }
             reload()
             selectedKeyId = RegistryKey.rootId
         } catch {
             database = nil
+            watcher = nil
             keysById = [:]
             childrenById = [:]
             values = []
@@ -162,6 +181,52 @@ final class RegistryStore: ObservableObject {
         } catch {
             show(error)
         }
+    }
+
+    /// View ▸ Refresh: also picks up a database file Office swapped in without a change notification.
+    func refresh() {
+        if !reopenIfReplaced() {
+            reload()
+        }
+    }
+
+    private func externalChange() {
+        guard database != nil else {
+            return
+        }
+        if reopenIfReplaced() {
+            return
+        }
+        if isModalActive {
+            needsReload = true
+        } else {
+            reload()
+        }
+    }
+
+    private func resumeDeferredReload() {
+        if needsReload, !isModalActive {
+            needsReload = false
+            reload()
+        }
+    }
+
+    /// Office may replace the database file or point the symlink to a new file. The open connection
+    /// would keep using the old, unlinked file, so reopen. Returns `true` if it reopened.
+    @discardableResult
+    func reopenIfReplaced() -> Bool {
+        guard let database, let openedURL else {
+            return false
+        }
+        guard RegistryDatabase.fileIdentity(of: openedURL) != database.fileIdentity else {
+            return false
+        }
+        let selection = selectedKeyId.map(pathComponents(of:))
+        open(url: openedURL, readOnly: database.isReadOnly)
+        if let selection, let key = key(atPath: selection) {
+            reveal(keyId: key.id)
+        }
+        return true
     }
 
     // MARK: - Tree queries
