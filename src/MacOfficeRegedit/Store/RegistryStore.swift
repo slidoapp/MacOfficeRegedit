@@ -98,6 +98,9 @@ final class RegistryStore: ObservableObject {
     var backupsDirectory = RegistryStore.defaultBackupsDirectory
 
     private var watcher: FileWatcher?
+    /// Watches the folder holding the opened path: Office may point the symlink at a new file without
+    /// touching the old one, which the file watcher (on the resolved file) would never notice.
+    private var directoryWatcher: FileWatcher?
     var hasBackedUp = false
     /// The URL as opened (e.g. the Office symlink), to detect when it starts pointing to another file.
     private var openedURL: URL?
@@ -141,11 +144,17 @@ final class RegistryStore: ObservableObject {
                     self?.externalChange()
                 }
             }
+            directoryWatcher = FileWatcher(url: url.deletingLastPathComponent()) { [weak self] in
+                Task { @MainActor in
+                    self?.directoryChanged()
+                }
+            }
             reload()
             selectedKeyId = RegistryKey.rootId
         } catch {
             database = nil
             watcher = nil
+            directoryWatcher = nil
             keysById = [:]
             childrenById = [:]
             values = []
@@ -194,20 +203,30 @@ final class RegistryStore: ObservableObject {
         guard database != nil else {
             return
         }
-        if reopenIfReplaced() {
+        if isModalActive {
+            needsReload = true
+        } else {
+            refresh()
+        }
+    }
+
+    /// Other files in the folder change often (Office keeps lock files there), so only check whether
+    /// the database itself was replaced instead of reloading.
+    private func directoryChanged() {
+        guard database != nil else {
             return
         }
         if isModalActive {
             needsReload = true
         } else {
-            reload()
+            reopenIfReplaced()
         }
     }
 
     private func resumeDeferredReload() {
         if needsReload, !isModalActive {
             needsReload = false
-            reload()
+            refresh()
         }
     }
 

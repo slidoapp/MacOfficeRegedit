@@ -498,6 +498,34 @@ final class RegistryStoreTests: XCTestCase {
         XCTAssertEqual(files.filter { $0.hasSuffix(".reg") }.count, 30)
     }
 
+    func testFollowsRetargetedSymlinkWithoutWrites() throws {
+        // Office keeps MicrosoftRegistrationDB.reg as a symlink to the current database file.
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("symlink-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let newTarget = try makeTestDatabase()
+        defer { try? FileManager.default.removeItem(at: newTarget) }
+        try RegistryDatabase(url: newTarget).createKey(named: "Retargeted", parentId: 1)
+        let link = folder.appendingPathComponent("MicrosoftRegistrationDB.reg")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: url)
+
+        store.open(url: link)
+        store.navigate(to: "Software\\Microsoft")
+        XCTAssertNil(store.key(atPath: ["Software", "Retargeted"]))
+
+        // Retarget the link; the old file stays untouched, so only the folder changes.
+        try FileManager.default.removeItem(at: link)
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: newTarget)
+
+        let deadline = Date().addingTimeInterval(5)
+        while store.key(atPath: ["Software", "Retargeted"]) == nil, Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.1))
+        }
+        XCTAssertNotNil(store.key(atPath: ["Software", "Retargeted"]))
+        XCTAssertEqual(store.database?.url, newTarget.resolvingSymlinksInPath())
+        XCTAssertEqual(store.addressText, "Computer\\HKEY_CURRENT_USER\\Software\\Microsoft", "Selection is kept")
+    }
+
     func testExportDocumentContainsSubtree() throws {
         let document = try store.exportDocument(keyId: 2)
         XCTAssertEqual(document.keys.map(\.path), [["Software", "Microsoft"], ["Software", "Microsoft", "Office"]])
