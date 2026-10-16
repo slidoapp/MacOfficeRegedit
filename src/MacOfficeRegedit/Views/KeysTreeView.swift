@@ -3,7 +3,7 @@ import SwiftUI
 /// The key hierarchy (left pane). Expansion is driven by the store so that "Go to", "Find" and the
 /// address bar can reveal deeply nested keys.
 struct KeysTreeView: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
     /// `List` writes its selection during view updates; forwarding it from `onChange` keeps the store's
     /// resulting changes (values, address) out of the view update.
     @State private var selection: Int64?
@@ -13,12 +13,12 @@ struct KeysTreeView: View {
             KeyNodeView(key: .root)
         }
         .listStyle(.sidebar)
-        .onChange(of: selection) { selection in
+        .onChange(of: selection) { _, selection in
             if store.selectedKeyId != selection {
                 store.selectedKeyId = selection
             }
         }
-        .onReceive(store.$selectedKeyId) { selectedKeyId in
+        .onChange(of: store.selectedKeyId, initial: true) { _, selectedKeyId in
             if selection != selectedKeyId {
                 selection = selectedKeyId
             }
@@ -31,7 +31,7 @@ struct KeysTreeView: View {
 }
 
 private struct KeyNodeView: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
     let key: RegistryKey
 
     var body: some View {
@@ -52,7 +52,7 @@ private struct KeyNodeView: View {
         Binding(
             get: { store.expandedKeyIds.contains(key.id) },
             set: { isExpanded in
-                // Avoid publishing a change when SwiftUI merely re-reports the current state.
+                // Assigning an equal set still notifies observers, so skip it when SwiftUI re-reports the current state.
                 guard isExpanded != store.expandedKeyIds.contains(key.id) else {
                     return
                 }
@@ -67,7 +67,7 @@ private struct KeyNodeView: View {
 }
 
 private struct KeyRowView: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
     let key: RegistryKey
 
     var body: some View {
@@ -91,7 +91,7 @@ private struct KeyRowView: View {
 }
 
 struct KeyContextMenu: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
     let key: RegistryKey
 
     var body: some View {
@@ -149,6 +149,6 @@ struct KeyContextMenu: View {
 struct KeysTreeView_Previews: PreviewProvider {
     static var previews: some View {
         KeysTreeView()
-            .environmentObject(RegistryStore())
+            .environment(RegistryStore())
     }
 }

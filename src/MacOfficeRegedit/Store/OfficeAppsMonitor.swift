@@ -1,8 +1,10 @@
 import AppKit
+import Observation
 
 /// Tracks running Office apps. They read the registry at launch and may overwrite edits when they quit.
 @MainActor
-final class OfficeAppsMonitor: ObservableObject {
+@Observable
+final class OfficeAppsMonitor {
     static let bundleIdentifiers: [String: String] = [
         "com.microsoft.Word": "Word",
         "com.microsoft.Excel": "Excel",
@@ -11,10 +13,10 @@ final class OfficeAppsMonitor: ObservableObject {
         "com.microsoft.onenote.mac": "OneNote",
     ]
 
-    @Published private(set) var runningApps: [String] = []
+    private(set) var runningApps: [String] = []
 
     /// Written once in `init` and read in `deinit`, when nothing else can reference the monitor.
-    private nonisolated(unsafe) var observers: [NSObjectProtocol] = []
+    @ObservationIgnored private nonisolated(unsafe) var observers: [NSObjectProtocol] = []
 
     init() {
         refresh()

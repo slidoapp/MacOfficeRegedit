@@ -68,9 +68,9 @@ struct EditNumericValueView: View {
                     Text("Decimal").tag(Base.decimal)
                 }
                 .pickerStyle(.radioGroup)
-                .onChange(of: base) { [base] newBase in
+                .onChange(of: base) { oldBase, newBase in
                     // Convert the current number like Windows does when switching base.
-                    if let number = EditNumericValueView.parse(text, base: base, maximum: maximum) {
+                    if let number = EditNumericValueView.parse(text, base: oldBase, maximum: maximum) {
                         text = String(number, radix: newBase.radix)
                     }
                 }

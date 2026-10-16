@@ -1,10 +1,11 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var store: RegistryStore
-    @EnvironmentObject var officeApps: OfficeAppsMonitor
+    @Environment(RegistryStore.self) private var store
+    @Environment(OfficeAppsMonitor.self) private var officeApps
 
     var body: some View {
+        @Bindable var store = store
         Group {
             if let openError = store.openError {
                 DatabaseUnavailableView(message: openError)
@@ -32,7 +33,7 @@ struct ContentView: View {
         .frame(minWidth: 760, minHeight: 420)
         .sheet(item: $store.sheet) { sheet in
             SheetContent(sheet: sheet)
-                .environmentObject(store)
+                .environment(store)
         }
         .confirmationDialog(
             store.pendingDeletion?.title ?? "",
@@ -88,7 +89,7 @@ private func importMessage(_ pendingImport: RegistryStore.PendingImport) -> Stri
 }
 
 private struct SheetContent: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
     let sheet: RegistryStore.Sheet
 
     var body: some View {
@@ -117,15 +118,17 @@ private struct SheetContent: View {
 
 /// Windows-style address bar showing (and accepting) the path of the selected key.
 private struct AddressBar: View {
-    @EnvironmentObject var store: RegistryStore
-    /// Local, so typing doesn't publish store changes (which would re-render the whole tree).
+    @Environment(RegistryStore.self) private var store
+    /// Local, so typing doesn't change the store; it follows the selected key's path.
     @State private var text = ""
 
     var body: some View {
         TextField("Path", text: $text)
             .textFieldStyle(.roundedBorder)
             .font(.body.monospaced())
-            .onReceive(store.$addressText) { text = $0 }
+            .onChange(of: store.addressText, initial: true) { _, address in
+                text = address
+            }
             .onSubmit {
                 if !store.navigate(to: text) {
                     NSSound.beep()
@@ -155,7 +158,7 @@ private struct OfficeRunningBanner: View {
 }
 
 private struct StatusBar: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
 
     var body: some View {
         HStack {
@@ -179,7 +182,7 @@ private struct StatusBar: View {
 }
 
 private struct DatabaseUnavailableView: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
     let message: String
 
     var body: some View {
@@ -210,7 +213,7 @@ private struct DatabaseUnavailableView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(RegistryStore())
-            .environmentObject(OfficeAppsMonitor())
+            .environment(RegistryStore())
+            .environment(OfficeAppsMonitor())
     }
 }

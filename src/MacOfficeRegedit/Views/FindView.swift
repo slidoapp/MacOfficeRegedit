@@ -3,7 +3,7 @@ import SwiftUI
 /// Search over key names, value names and value data. Results stay available for "Find Next" (⌘G).
 struct FindView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
 
     @AppStorage("find.keys") private var keys = true
     @AppStorage("find.values") private var values = true

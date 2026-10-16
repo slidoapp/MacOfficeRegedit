@@ -18,7 +18,7 @@ with a UI modelled after Windows `regedit`.
 3. Releases are not signed with a Developer ID yet, so macOS blocks the first launch. Click **Open Anyway** in
    *System Settings ▸ Privacy & Security*, or run `xattr -dr com.apple.quarantine /Applications/MacOfficeRegedit.app`.
 
-Requires macOS 13.1 or later and Microsoft Office for Mac (which creates the registry). macOS may ask to allow
+Requires macOS 15 or later and Microsoft Office for Mac (which creates the registry). macOS may ask to allow
 access to data from other apps the first time the app opens Office's registry.
 
 ## Features

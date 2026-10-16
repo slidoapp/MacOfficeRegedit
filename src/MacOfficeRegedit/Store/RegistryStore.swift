@@ -1,9 +1,11 @@
 import AppKit
 import Foundation
+import Observation
 
 /// Application state: the open database, the key tree, the selection and all user operations.
 @MainActor
-final class RegistryStore: ObservableObject {
+@Observable
+final class RegistryStore {
     enum Sheet: Identifiable {
         case editValue(RegistryValue, isNew: Bool)
         case newKey(parentId: Int64)
@@ -56,14 +58,14 @@ final class RegistryStore: ObservableObject {
 
     // MARK: - State
 
-    @Published private(set) var database: RegistryDatabase?
-    @Published private(set) var openError: String?
+    private(set) var database: RegistryDatabase?
+    private(set) var openError: String?
 
-    @Published private(set) var keysById: [Int64: RegistryKey] = [:]
+    private(set) var keysById: [Int64: RegistryKey] = [:]
     /// Child keys of each key, sorted by name like Windows regedit.
-    @Published private(set) var childrenById: [Int64: [RegistryKey]] = [:]
-    @Published var expandedKeyIds: Set<Int64> = [RegistryKey.rootId]
-    @Published var selectedKeyId: Int64? {
+    private(set) var childrenById: [Int64: [RegistryKey]] = [:]
+    var expandedKeyIds: Set<Int64> = [RegistryKey.rootId]
+    var selectedKeyId: Int64? {
         didSet {
             if selectedKeyId != oldValue {
                 selectedKeyChanged()
@@ -71,41 +73,41 @@ final class RegistryStore: ObservableObject {
         }
     }
 
-    @Published private(set) var values: [RegistryValue] = []
-    @Published var selectedValueIds: Set<RegistryValue.ID> = []
+    private(set) var values: [RegistryValue] = []
+    var selectedValueIds: Set<RegistryValue.ID> = []
     /// Pane the user last worked in; used when the keyboard focus can't be determined (see `activePane`).
-    /// Not `@Published`: no view depends on it, and it is set from gestures during view updates.
-    var focusedPane: Pane = .keys
+    /// Not observed: no view depends on it, and it is set from gestures during view updates.
+    @ObservationIgnored var focusedPane: Pane = .keys
 
     /// Path of the selected key; updated on selection changes and renames only, so typing in the
     /// address bar is not overwritten by background reloads.
-    @Published private(set) var addressText = RegistryPath.display([])
-    @Published var sheet: Sheet? {
+    private(set) var addressText = RegistryPath.display([])
+    var sheet: Sheet? {
         didSet { resumeDeferredReload() }
     }
-    @Published var pendingDeletion: Deletion? {
+    var pendingDeletion: Deletion? {
         didSet { resumeDeferredReload() }
     }
-    @Published var pendingImport: PendingImport? {
+    var pendingImport: PendingImport? {
         didSet { resumeDeferredReload() }
     }
-    @Published var alertMessage: String?
+    var alertMessage: String?
 
-    @Published var searchResults: [SearchResult] = []
-    var searchResultIndex = -1
+    var searchResults: [SearchResult] = []
+    @ObservationIgnored var searchResultIndex = -1
 
     /// Where a copy of the database is saved before the first modification.
-    var backupsDirectory = RegistryStore.defaultBackupsDirectory
+    @ObservationIgnored var backupsDirectory = RegistryStore.defaultBackupsDirectory
 
-    private var watcher: FileWatcher?
+    @ObservationIgnored private var watcher: FileWatcher?
     /// Watches the folder holding the opened path: Office may point the symlink at a new file without
     /// touching the old one, which the file watcher (on the resolved file) would never notice.
-    private var directoryWatcher: FileWatcher?
-    var hasBackedUp = false
+    @ObservationIgnored private var directoryWatcher: FileWatcher?
+    @ObservationIgnored var hasBackedUp = false
     /// The URL as opened (e.g. the Office symlink), to detect when it starts pointing to another file.
-    private var openedURL: URL?
+    @ObservationIgnored private var openedURL: URL?
     /// External changes are not applied while a dialog is open, since it holds ids and data from before.
-    private var needsReload = false
+    @ObservationIgnored private var needsReload = false
 
     /// A dialog or confirmation is showing; menu commands that would replace it are disabled.
     var isModalActive: Bool { sheet != nil || pendingDeletion != nil || pendingImport != nil }

@@ -2,7 +2,7 @@ import SwiftUI
 
 /// Values of the selected key (right pane).
 struct ValuesTableView: View {
-    @EnvironmentObject var store: RegistryStore
+    @Environment(RegistryStore.self) private var store
 
     @State private var sortOrder: [KeyPathComparator<RegistryValue>] = []
 
@@ -11,6 +11,7 @@ struct ValuesTableView: View {
     }
 
     var body: some View {
+        @Bindable var store = store
         Table(rows, selection: $store.selectedValueIds, sortOrder: $sortOrder) {
             TableColumn("Name", value: \.displayName) { value in
                 HStack(spacing: 4) {
@@ -43,7 +44,7 @@ struct ValuesTableView: View {
         .onDeleteCommand {
             store.beginDelete(in: .values)
         }
-        .onChange(of: store.selectedValueIds) { ids in
+        .onChange(of: store.selectedValueIds) { _, ids in
             if !ids.isEmpty {
                 store.focusedPane = .values
             }
@@ -96,6 +97,6 @@ struct ValuesTableView: View {
 struct ValuesTableView_Previews: PreviewProvider {
     static var previews: some View {
         ValuesTableView()
-            .environmentObject(RegistryStore())
+            .environment(RegistryStore())
     }
 }
