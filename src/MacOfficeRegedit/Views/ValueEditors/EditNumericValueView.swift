@@ -1,86 +1,114 @@
 import SwiftUI
 
+/// Editor for `REG_DWORD` and `REG_QWORD` values.
 struct EditNumericValueView: View {
-    static let windowId = "EditNumericValue"
-    
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var dataStore: DataStore
-    @State var valueName: String = ""
-    @State var valueData: Int64 = 0
-    @State var valueDataString: String = ""
-    @State var base = EditorBase.Hexadecimal
-    @State var windowTitle = ""
-    
-    let regValueId: RegistryValueTableItem.ID?
-    
-    init(regValueId: RegistryValueTableItem.ID?) {
-        self.regValueId = regValueId
+    enum Base: Hashable {
+        case hexadecimal, decimal
+
+        var radix: Int { self == .hexadecimal ? 16 : 10 }
     }
-    
+
+    let original: RegistryValue
+    let isNew: Bool
+    let onCommit: ValueCommitHandler
+
+    @State private var name: String
+    @State private var text: String
+    @State private var base = Base.hexadecimal
+
+    init(value: RegistryValue, isNew: Bool, onCommit: @escaping ValueCommitHandler) {
+        self.original = value
+        self.isNew = isNew
+        self.onCommit = onCommit
+        _name = State(initialValue: value.name)
+        _text = State(initialValue: String(EditNumericValueView.number(of: value.data), radix: 16))
+    }
+
+    private var isQword: Bool {
+        if case .qword = original.data {
+            return true
+        }
+        return false
+    }
+
+    private var maximum: UInt64 { isQword ? UInt64.max : UInt64(UInt32.max) }
+
+    private var parsed: UInt64? { EditNumericValueView.parse(text, base: base, maximum: maximum) }
+
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Value name:")
-            TextField("", text: $valueName)
-                .disabled(true)
-            HStack {
+        ValueEditorForm(
+            title: isQword ? "Edit QWORD (64-bit) Value" : "Edit DWORD (32-bit) Value",
+            name: $name,
+            isNameEditable: isNew,
+            canCommit: parsed != nil,
+            commit: {
+                guard let number = parsed else {
+                    throw RegistryError.invalidData("The value data is not a valid number.")
+                }
+                var value = original
+                value.name = name
+                value.data = isQword ? .qword(number) : .dword(UInt32(number))
+                try onCommit(value)
+            }
+        ) {
+            HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading) {
                     Text("Value data:")
-                    TextField("", text: $valueDataString)
+                    TextField("", text: $text)
+                        .font(.body.monospaced())
+                        .accessibilityIdentifier("valueData")
+                    if parsed == nil {
+                        Text(text.isEmpty ? "Enter a number." : "Must be a \(base == .hexadecimal ? "hexadecimal" : "decimal") number up to \(String(maximum, radix: base.radix)).")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
                 }
-                Picker(selection: $base, label: Text("Base")) {
-                    Text("Hexadecimal").tag(EditorBase.Hexadecimal)
-                    Text("Decimal").tag(EditorBase.Decimal)
+                Picker("Base", selection: $base) {
+                    Text("Hexadecimal").tag(Base.hexadecimal)
+                    Text("Decimal").tag(Base.decimal)
                 }
-                .padding(.all)
                 .pickerStyle(.radioGroup)
-                .onChange(of: base) {
-                    self.valueDataString = self.getValueString(base: $0)
-                }
-            }
-            HStack {
-                Spacer()
-                Button("OK") {}
-                Button("Cancel") {
-                    dismiss()
+                .onChange(of: base) { [base] newBase in
+                    // Convert the current number like Windows does when switching base.
+                    if let number = EditNumericValueView.parse(text, base: base, maximum: maximum) {
+                        text = String(number, radix: newBase.radix)
+                    }
                 }
             }
         }
-        .padding(.all)
-        .frame(width: 400, height: 200)
-        .navigationTitle(self.windowTitle)
-        .onAppear {
-            loadState()
+        .frame(width: 440)
+    }
+
+    static func number(of data: RegistryData) -> UInt64 {
+        switch data {
+        case .dword(let number): return UInt64(number)
+        case .qword(let number): return number
+        default: return 0
         }
     }
-    
-    private func loadState() {
-        guard let regValueItem = self.dataStore.valueTableItems.first(where: { $0.id == regValueId }),
-              let regValue = self.dataStore.regValues.first(where: { $0.name == regValueItem.name  }) else {
-            return
+
+    /// Parses user input; accepts an optional `0x` prefix in hexadecimal mode. Empty input means 0, like Windows.
+    static func parse(_ text: String, base: Base, maximum: UInt64) -> UInt64? {
+        var digits = text.trimmingCharacters(in: .whitespaces)
+        if base == .hexadecimal, digits.lowercased().hasPrefix("0x") {
+            digits.removeFirst(2)
         }
-        
-        self.valueName = regValue.name
-        self.valueData = regValue.value as! Int64
-        self.valueDataString = getValueString(base: self.base)
-        self.windowTitle = regValue.type == .REG_QWORD
-            ? "Edit QWORD (64-bit) Value"
-            : "Edit DWORD (32-bit) Value"
-    }
-    
-    private func getValueString(base: EditorBase) -> String {
-        let radix = base == .Decimal ? 10 : 16
-        return String(self.valueData, radix: radix)
-    }
-    
-    enum EditorBase {
-        case Hexadecimal, Decimal
+        if digits.isEmpty {
+            return 0
+        }
+        guard let number = UInt64(digits, radix: base.radix), number <= maximum else {
+            return nil
+        }
+        return number
     }
 }
 
 struct EditNumericValueView_Previews: PreviewProvider {
-    static let previewDataStore = DataStore(isPreview: true)
     static var previews: some View {
-        EditNumericValueView(regValueId: previewDataStore.valueTableItems[0].id)
-            .environmentObject(DataStore(isPreview: true))
+        EditNumericValueView(
+            value: RegistryValue(keyId: 1, name: "Lcid", type: .REG_DWORD, data: .dword(1051)),
+            isNew: false,
+            onCommit: { _ in }
+        )
     }
 }

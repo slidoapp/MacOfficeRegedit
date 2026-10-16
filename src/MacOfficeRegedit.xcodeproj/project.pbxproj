@@ -3,33 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8794D858299FB66D00BCF0FC /* MacOfficeRegeditApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */; };
-		8794D85A299FB66D00BCF0FC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D859299FB66D00BCF0FC /* ContentView.swift */; };
-		8794D85C299FB66E00BCF0FC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8794D85B299FB66E00BCF0FC /* Assets.xcassets */; };
-		8794D85F299FB66E00BCF0FC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8794D85E299FB66E00BCF0FC /* Preview Assets.xcassets */; };
-		8794D86A299FB66E00BCF0FC /* MacOfficeRegeditTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D869299FB66E00BCF0FC /* MacOfficeRegeditTests.swift */; };
-		8794D874299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D873299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift */; };
-		8794D876299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794D875299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift */; };
-		87E5BA75299FB712003E26A7 /* RegistryKeyListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA74299FB712003E26A7 /* RegistryKeyListItem.swift */; };
-		87E5BA77299FB723003E26A7 /* RegistryValueTableItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA76299FB723003E26A7 /* RegistryValueTableItem.swift */; };
-		87E5BA79299FB774003E26A7 /* Reader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87E5BA78299FB774003E26A7 /* Reader.swift */; };
 		87E5BA7C299FB7D7003E26A7 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 87E5BA7B299FB7D7003E26A7 /* SQLite */; };
-		87F48764299FEA8A0001EFDC /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F48763299FEA8A0001EFDC /* DataStore.swift */; };
-		87F48767299FEC890001EFDC /* EditStringValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F48766299FEC890001EFDC /* EditStringValueView.swift */; };
-		87F4876B29A8CCE80001EFDC /* KeysTreeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4876A29A8CCE80001EFDC /* KeysTreeView.swift */; };
-		87F4876D29A8DD430001EFDC /* ValuesTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4876C29A8DD430001EFDC /* ValuesTableView.swift */; };
-		87F4877029A8FF790001EFDC /* EditNumericValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4876F29A8FF790001EFDC /* EditNumericValueView.swift */; };
-		87F4877229A9086C0001EFDC /* EditBinaryValueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4877129A9086C0001EFDC /* EditBinaryValueView.swift */; };
-		87F4877429A91B3B0001EFDC /* RegistryKeyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F4877329A91B3B0001EFDC /* RegistryKeyViewModel.swift */; };
-		B4E5EFDB29A242B3000BDCB0 /* RegistryKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFDA29A242B3000BDCB0 /* RegistryKey.swift */; };
-		B4E5EFDD29A25394000BDCB0 /* RegistryValueType.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFDC29A25394000BDCB0 /* RegistryValueType.swift */; };
-		B4E5EFDF29A2543F000BDCB0 /* RegistryValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFDE29A2543F000BDCB0 /* RegistryValue.swift */; };
-		B4E5EFE329A29453000BDCB0 /* RegistryValuesTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFE229A29453000BDCB0 /* RegistryValuesTable.swift */; };
-		B4E5EFE529A29482000BDCB0 /* RegistryKeysTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E5EFE429A29482000BDCB0 /* RegistryKeysTable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,32 +29,27 @@
 
 /* Begin PBXFileReference section */
 		8794D854299FB66D00BCF0FC /* MacOfficeRegedit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacOfficeRegedit.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditApp.swift; sourceTree = "<group>"; };
-		8794D859299FB66D00BCF0FC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		8794D85B299FB66E00BCF0FC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8794D85E299FB66E00BCF0FC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8794D860299FB66E00BCF0FC /* MacOfficeRegedit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacOfficeRegedit.entitlements; sourceTree = "<group>"; };
 		8794D865299FB66E00BCF0FC /* MacOfficeRegeditTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacOfficeRegeditTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8794D869299FB66E00BCF0FC /* MacOfficeRegeditTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditTests.swift; sourceTree = "<group>"; };
 		8794D86F299FB66E00BCF0FC /* MacOfficeRegeditUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacOfficeRegeditUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8794D873299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditUITests.swift; sourceTree = "<group>"; };
-		8794D875299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacOfficeRegeditUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		87E5BA74299FB712003E26A7 /* RegistryKeyListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKeyListItem.swift; sourceTree = "<group>"; };
-		87E5BA76299FB723003E26A7 /* RegistryValueTableItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValueTableItem.swift; sourceTree = "<group>"; };
-		87E5BA78299FB774003E26A7 /* Reader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reader.swift; sourceTree = "<group>"; };
-		87F48763299FEA8A0001EFDC /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
-		87F48766299FEC890001EFDC /* EditStringValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStringValueView.swift; sourceTree = "<group>"; };
-		87F4876A29A8CCE80001EFDC /* KeysTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysTreeView.swift; sourceTree = "<group>"; };
-		87F4876C29A8DD430001EFDC /* ValuesTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValuesTableView.swift; sourceTree = "<group>"; };
-		87F4876F29A8FF790001EFDC /* EditNumericValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditNumericValueView.swift; sourceTree = "<group>"; };
-		87F4877129A9086C0001EFDC /* EditBinaryValueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditBinaryValueView.swift; sourceTree = "<group>"; };
-		87F4877329A91B3B0001EFDC /* RegistryKeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKeyViewModel.swift; sourceTree = "<group>"; };
-		B4E5EFDA29A242B3000BDCB0 /* RegistryKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKey.swift; sourceTree = "<group>"; };
-		B4E5EFDC29A25394000BDCB0 /* RegistryValueType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValueType.swift; sourceTree = "<group>"; };
-		B4E5EFDE29A2543F000BDCB0 /* RegistryValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValue.swift; sourceTree = "<group>"; };
-		B4E5EFE229A29453000BDCB0 /* RegistryValuesTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryValuesTable.swift; sourceTree = "<group>"; };
-		B4E5EFE429A29482000BDCB0 /* RegistryKeysTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryKeysTable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		8794D856299FB66D00BCF0FC /* MacOfficeRegedit */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MacOfficeRegedit;
+			sourceTree = "<group>";
+		};
+		8794D868299FB66E00BCF0FC /* MacOfficeRegeditTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MacOfficeRegeditTests;
+			sourceTree = "<group>";
+		};
+		8794D872299FB66E00BCF0FC /* MacOfficeRegeditUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MacOfficeRegeditUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		8794D851299FB66D00BCF0FC /* Frameworks */ = {
@@ -124,106 +97,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8794D856299FB66D00BCF0FC /* MacOfficeRegedit */ = {
-			isa = PBXGroup;
-			children = (
-				B4E5EFE029A29414000BDCB0 /* Database */,
-				B4E5EFD929A2428F000BDCB0 /* Models */,
-				8794D857299FB66D00BCF0FC /* MacOfficeRegeditApp.swift */,
-				8794D85B299FB66E00BCF0FC /* Assets.xcassets */,
-				8794D860299FB66E00BCF0FC /* MacOfficeRegedit.entitlements */,
-				8794D85D299FB66E00BCF0FC /* Preview Content */,
-				87F48763299FEA8A0001EFDC /* DataStore.swift */,
-				87F48765299FEC690001EFDC /* Views */,
-			);
-			path = MacOfficeRegedit;
-			sourceTree = "<group>";
-		};
-		8794D85D299FB66E00BCF0FC /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				8794D85E299FB66E00BCF0FC /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		8794D868299FB66E00BCF0FC /* MacOfficeRegeditTests */ = {
-			isa = PBXGroup;
-			children = (
-				8794D869299FB66E00BCF0FC /* MacOfficeRegeditTests.swift */,
-			);
-			path = MacOfficeRegeditTests;
-			sourceTree = "<group>";
-		};
-		8794D872299FB66E00BCF0FC /* MacOfficeRegeditUITests */ = {
-			isa = PBXGroup;
-			children = (
-				8794D873299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift */,
-				8794D875299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift */,
-			);
-			path = MacOfficeRegeditUITests;
-			sourceTree = "<group>";
-		};
-		87E5BA73299FB6FA003E26A7 /* Items */ = {
-			isa = PBXGroup;
-			children = (
-				87E5BA74299FB712003E26A7 /* RegistryKeyListItem.swift */,
-				87E5BA76299FB723003E26A7 /* RegistryValueTableItem.swift */,
-				8794D859299FB66D00BCF0FC /* ContentView.swift */,
-			);
-			path = Items;
-			sourceTree = "<group>";
-		};
-		87F48765299FEC690001EFDC /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				87F4876E29A8FE730001EFDC /* ValueEditors */,
-				87E5BA73299FB6FA003E26A7 /* Items */,
-				87F4876A29A8CCE80001EFDC /* KeysTreeView.swift */,
-				87F4876C29A8DD430001EFDC /* ValuesTableView.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		87F4876E29A8FE730001EFDC /* ValueEditors */ = {
-			isa = PBXGroup;
-			children = (
-				87F4877129A9086C0001EFDC /* EditBinaryValueView.swift */,
-				87F4876F29A8FF790001EFDC /* EditNumericValueView.swift */,
-				87F48766299FEC890001EFDC /* EditStringValueView.swift */,
-			);
-			path = ValueEditors;
-			sourceTree = "<group>";
-		};
-		B4E5EFD929A2428F000BDCB0 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				B4E5EFDA29A242B3000BDCB0 /* RegistryKey.swift */,
-				87F4877329A91B3B0001EFDC /* RegistryKeyViewModel.swift */,
-				B4E5EFDE29A2543F000BDCB0 /* RegistryValue.swift */,
-				B4E5EFDC29A25394000BDCB0 /* RegistryValueType.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		B4E5EFE029A29414000BDCB0 /* Database */ = {
-			isa = PBXGroup;
-			children = (
-				B4E5EFE129A2941D000BDCB0 /* Tables */,
-				87E5BA78299FB774003E26A7 /* Reader.swift */,
-			);
-			path = Database;
-			sourceTree = "<group>";
-		};
-		B4E5EFE129A2941D000BDCB0 /* Tables */ = {
-			isa = PBXGroup;
-			children = (
-				B4E5EFE429A29482000BDCB0 /* RegistryKeysTable.swift */,
-				B4E5EFE229A29453000BDCB0 /* RegistryValuesTable.swift */,
-			);
-			path = Tables;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -238,6 +111,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8794D856299FB66D00BCF0FC /* MacOfficeRegedit */,
 			);
 			name = MacOfficeRegedit;
 			packageProductDependencies = (
@@ -260,6 +136,9 @@
 			dependencies = (
 				8794D867299FB66E00BCF0FC /* PBXTargetDependency */,
 			);
+			fileSystemSynchronizedGroups = (
+				8794D868299FB66E00BCF0FC /* MacOfficeRegeditTests */,
+			);
 			name = MacOfficeRegeditTests;
 			productName = MacOfficeRegeditTests;
 			productReference = 8794D865299FB66E00BCF0FC /* MacOfficeRegeditTests.xctest */;
@@ -277,6 +156,9 @@
 			);
 			dependencies = (
 				8794D871299FB66E00BCF0FC /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8794D872299FB66E00BCF0FC /* MacOfficeRegeditUITests */,
 			);
 			name = MacOfficeRegeditUITests;
 			productName = MacOfficeRegeditUITests;
@@ -334,8 +216,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8794D85F299FB66E00BCF0FC /* Preview Assets.xcassets in Resources */,
-				8794D85C299FB66E00BCF0FC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,23 +240,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87F4877029A8FF790001EFDC /* EditNumericValueView.swift in Sources */,
-				87F48764299FEA8A0001EFDC /* DataStore.swift in Sources */,
-				87F48767299FEC890001EFDC /* EditStringValueView.swift in Sources */,
-				B4E5EFDF29A2543F000BDCB0 /* RegistryValue.swift in Sources */,
-				87E5BA77299FB723003E26A7 /* RegistryValueTableItem.swift in Sources */,
-				8794D85A299FB66D00BCF0FC /* ContentView.swift in Sources */,
-				87F4876D29A8DD430001EFDC /* ValuesTableView.swift in Sources */,
-				87F4877229A9086C0001EFDC /* EditBinaryValueView.swift in Sources */,
-				B4E5EFE529A29482000BDCB0 /* RegistryKeysTable.swift in Sources */,
-				87F4876B29A8CCE80001EFDC /* KeysTreeView.swift in Sources */,
-				B4E5EFDD29A25394000BDCB0 /* RegistryValueType.swift in Sources */,
-				B4E5EFDB29A242B3000BDCB0 /* RegistryKey.swift in Sources */,
-				87E5BA79299FB774003E26A7 /* Reader.swift in Sources */,
-				87E5BA75299FB712003E26A7 /* RegistryKeyListItem.swift in Sources */,
-				87F4877429A91B3B0001EFDC /* RegistryKeyViewModel.swift in Sources */,
-				8794D858299FB66D00BCF0FC /* MacOfficeRegeditApp.swift in Sources */,
-				B4E5EFE329A29453000BDCB0 /* RegistryValuesTable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -384,7 +247,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8794D86A299FB66E00BCF0FC /* MacOfficeRegeditTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,8 +254,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8794D874299FB66E00BCF0FC /* MacOfficeRegeditUITests.swift in Sources */,
-				8794D876299FB66E00BCF0FC /* MacOfficeRegeditUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
