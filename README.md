@@ -46,6 +46,30 @@ Tests:
   ```
 - `MacOfficeRegeditUITests` – UI tests against a generated fixture database (require granting UI automation access).
 
+### Building a DMG
+
+`scripts/build-dmg.sh [output-dir]` archives a universal (Apple silicon and Intel) Release build and packages it
+as `MacOfficeRegedit-<version>-<build>.dmg`, with a link to `/Applications` for drag-and-drop installation.
+Without signing settings the app is signed ad hoc; see the script header for the Developer ID and notarization
+variables.
+
+### Releases
+
+The [Build DMG](.github/workflows/build-dmg.yml) workflow runs on the `xcode-27` GitHub runner with Xcode 27.1.
+It runs the unit tests and builds the DMG for every pull request (download it from the run's artifacts), and on
+every push to `main` it also publishes a GitHub release `v<version>-<run number>` with the DMG attached.
+
+Releases are signed ad hoc unless these repository secrets are set, so macOS blocks them on first launch
+(open them from *System Settings ▸ Privacy & Security*). Signing secrets are never used for pull requests.
+
+| Secret | Purpose |
+| --- | --- |
+| `DEVELOPER_ID_CERTIFICATE_P12` | Base64-encoded "Developer ID Application" certificate and private key (`.p12`) |
+| `DEVELOPER_ID_CERTIFICATE_PASSWORD` | Password of the `.p12` |
+| `DEVELOPER_ID_APPLICATION` | Signing identity, e.g. `Developer ID Application: Name (TEAMID)` |
+| `DEVELOPMENT_TEAM` | Team ID |
+| `NOTARY_APPLE_ID`, `NOTARY_TEAM_ID`, `NOTARY_PASSWORD` | Apple ID, team and app-specific password for notarization (optional) |
+
 ### Layout
 
 | Folder | Contents |

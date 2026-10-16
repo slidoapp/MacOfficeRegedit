@@ -1,0 +1,115 @@
+name: Build DMG
+
+# Pull requests: test, build the DMG and attach it to the run as an artifact.
+# Pushes to main (i.e. merged PRs): the same, then publish the DMG as a GitHub release.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  # Pull requests share a group per branch and superseded runs are cancelled. Every other run gets its own
+  # group: GitHub keeps only one pending run per group and cancels the rest, which would skip releases of
+  # merges that land while a build of main is running.
+  group: ${{ github.event_name == 'pull_request' && format('{0}-{1}', github.workflow, github.ref) || format('{0}-{1}', github.workflow, github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Test, build and package
+    runs-on: xcode-27
+    timeout-minutes: 45
+    permissions:
+      contents: write # create releases
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_27.1.app/Contents/Developer
+      IS_RELEASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      # Signing is optional and never used for pull requests; see "Releases" in README.md.
+      CAN_SIGN: ${{ github.event_name != 'pull_request' && secrets.DEVELOPER_ID_CERTIFICATE_P12 != '' && secrets.DEVELOPER_ID_APPLICATION != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Run unit tests
+        run: |
+          xcodebuild test \
+            -project src/MacOfficeRegedit.xcodeproj \
+            -scheme MacOfficeRegedit \
+            -destination 'platform=macOS' \
+            -only-testing:MacOfficeRegeditTests \
+            CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=
+
+      - name: Import Developer ID certificate
+        if: env.CAN_SIGN == 'true'
+        env:
+          CERTIFICATE_P12: ${{ secrets.DEVELOPER_ID_CERTIFICATE_P12 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+        run: |
+          KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -base64 24)"
+          echo "$CERTIFICATE_P12" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/certificate.p12" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -f pkcs12 -A -t agg
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/certificate.p12"
+
+      - name: Build DMG
+        id: dmg
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          DEVELOPER_ID_APPLICATION: ${{ env.CAN_SIGN == 'true' && secrets.DEVELOPER_ID_APPLICATION || '' }}
+          DEVELOPMENT_TEAM: ${{ env.CAN_SIGN == 'true' && secrets.DEVELOPMENT_TEAM || '' }}
+          NOTARY_APPLE_ID: ${{ env.CAN_SIGN == 'true' && secrets.NOTARY_APPLE_ID || '' }}
+          NOTARY_TEAM_ID: ${{ env.CAN_SIGN == 'true' && secrets.NOTARY_TEAM_ID || '' }}
+          NOTARY_PASSWORD: ${{ env.CAN_SIGN == 'true' && secrets.NOTARY_PASSWORD || '' }}
+        run: scripts/build-dmg.sh "$RUNNER_TEMP/dmg"
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: MacOfficeRegedit-${{ steps.dmg.outputs.version }}-${{ steps.dmg.outputs.build_number }}
+          path: ${{ steps.dmg.outputs.dmg_path }}
+          if-no-files-found: error
+
+      - name: Publish release
+        if: env.IS_RELEASE == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DMG_PATH: ${{ steps.dmg.outputs.dmg_path }}
+          VERSION: ${{ steps.dmg.outputs.version }}
+          BUILD: ${{ steps.dmg.outputs.build_number }}
+          SIGNING: ${{ steps.dmg.outputs.signing }}
+          NOTARIZED: ${{ steps.dmg.outputs.notarized }}
+        run: |
+          # Describe how the DMG was actually signed, as reported by the build script.
+          if [[ "$SIGNING" == "developer-id" && "$NOTARIZED" == "true" ]]; then
+            NOTES="Signed with a Developer ID certificate and notarized by Apple."
+          elif [[ "$SIGNING" == "developer-id" ]]; then
+            NOTES="Signed with a Developer ID certificate but not notarized, so macOS may ask for confirmation on first launch."
+          else
+            NOTES="This build is not signed with a Developer ID certificate, so macOS blocks it on first launch. Open it anyway from System Settings ▸ Privacy & Security, or run: \`xattr -dr com.apple.quarantine /Applications/MacOfficeRegedit.app\`"
+          fi
+          # Builds of main can finish out of order, so only the build of main's current head becomes "Latest".
+          LATEST=false
+          if [[ "$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)" == "$GITHUB_SHA" ]]; then
+            LATEST=true
+          fi
+          gh release create "v$VERSION-$BUILD" "$DMG_PATH" \
+            --target "$GITHUB_SHA" \
+            --title "MacOfficeRegedit $VERSION ($BUILD)" \
+            --notes "$NOTES" \
+            --generate-notes \
+            --latest="$LATEST"
+
+      - name: Remove signing keychain
+        if: always() && env.CAN_SIGN == 'true'
+        run: security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true
