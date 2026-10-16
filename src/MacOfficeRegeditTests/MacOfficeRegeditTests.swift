@@ -412,6 +412,8 @@ final class RegistryStoreTests: XCTestCase {
 
         store.search(.init(text: "{\"", keys: false, values: false, data: true))
         XCTAssertEqual(store.searchResults.map(\.valueName), ["Blob"])
+        // Binary data is matched (and listed) as the UTF-16 text it holds.
+        XCTAssertEqual(store.searchResults.first?.match, "Blob = {\"")
 
         store.search(.init(text: "Micro", matchWholeString: true))
         XCTAssertTrue(store.searchResults.isEmpty)

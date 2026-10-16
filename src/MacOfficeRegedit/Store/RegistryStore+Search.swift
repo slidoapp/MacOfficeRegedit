@@ -58,7 +58,7 @@ extension RegistryStore {
                 if options.values, matches(value.name) {
                     results.append(SearchResult(kind: .value, keyId: id, valueName: value.name, path: path, match: value.displayName))
                 } else if options.data, let text = RegistryStore.searchableText(value.data), matches(text) {
-                    results.append(SearchResult(kind: .data, keyId: id, valueName: value.name, path: path, match: "\(value.displayName) = \(value.data.displayString)"))
+                    results.append(SearchResult(kind: .data, keyId: id, valueName: value.name, path: path, match: "\(value.displayName) = \(text)"))
                 }
             }
             stack.append(contentsOf: children(of: id).reversed().map(\.id))
