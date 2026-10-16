@@ -93,6 +93,19 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(RegistryDatabase.data(from: multi, type: .REG_MULTI_SZ), .multiString(["a", "b"]))
     }
 
+    func testNumericEditorParsing() {
+        let dwordMax = UInt64(UInt32.max)
+        XCTAssertEqual(EditNumericValueView.parse("ff", base: .hexadecimal, maximum: dwordMax), 255)
+        XCTAssertEqual(EditNumericValueView.parse("0xFF", base: .hexadecimal, maximum: dwordMax), 255)
+        XCTAssertEqual(EditNumericValueView.parse("", base: .decimal, maximum: dwordMax), 0)
+        XCTAssertEqual(EditNumericValueView.parse("4294967295", base: .decimal, maximum: dwordMax), dwordMax)
+        XCTAssertNil(EditNumericValueView.parse("4294967296", base: .decimal, maximum: dwordMax))
+        XCTAssertNil(EditNumericValueView.parse("1ffffffff", base: .hexadecimal, maximum: dwordMax))
+        XCTAssertNil(EditNumericValueView.parse("12g", base: .hexadecimal, maximum: dwordMax))
+        XCTAssertNil(EditNumericValueView.parse("-1", base: .decimal, maximum: dwordMax))
+        XCTAssertEqual(EditNumericValueView.parse("ffffffffffffffff", base: .hexadecimal, maximum: .max), .max)
+    }
+
     func testKeyNameValidation() {
         XCTAssertThrowsError(try RegistryKey.validateName(""))
         XCTAssertThrowsError(try RegistryKey.validateName("a\\b"))
