@@ -1,0 +1,29 @@
+---
+name: lint
+
+on:
+  push:
+    # Lint pushes to default branch
+    branches:
+      - main
+  # Lint pull request events
+  pull_request:
+
+# Declare default permissions as read-only
+permissions: read-all
+
+jobs:
+  # The template runs super-linter, which this organization's allowed-actions policy does not permit, so the
+  # same Markdown and YAML linters run directly with the configuration in .github/linters.
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🧹 lint Markdown
+        run: npx --yes markdownlint-cli2@0.24.0 --config .github/linters/.markdownlint.yml "**/*.md"
+      - name: 🧹 lint YAML
+        run: |
+          pipx install yamllint==1.38.0
+          yamllint --config-file .github/linters/.yamllint.yml .

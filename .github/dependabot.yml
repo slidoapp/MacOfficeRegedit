@@ -1,0 +1,13 @@
+---
+version: 2
+updates:
+  # Swift packages are resolved by the Xcode project, which Dependabot does not support.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    groups:
+      github:
+        patterns:
+          - "actions/*"
+          - "github/*"
+    schedule:
+      interval: "weekly"
