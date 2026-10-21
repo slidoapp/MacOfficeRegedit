@@ -13,7 +13,3 @@
 # the following users/teams will be requested for
 # review when someone opens a pull request.
 * @slidoapp/team-presentations-desktop
-
-# Enforces admin protections for repo configuration via probot settings app.
-# ref: https://github.com/probot/settings#security-implications
-.github/settings.yml @slidoapp/team-presentations-admins
