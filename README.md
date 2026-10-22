@@ -1,5 +1,11 @@
 # MacOfficeRegedit
 
+[![Release](https://img.shields.io/github/v/release/slidoapp/MacOfficeRegedit?display_name=tag)](CHANGELOG.md)
+[![Build DMG](https://github.com/slidoapp/MacOfficeRegedit/actions/workflows/build-dmg.yml/badge.svg?branch=main)](https://github.com/slidoapp/MacOfficeRegedit/actions/workflows/build-dmg.yml)
+[![Lint](https://github.com/slidoapp/MacOfficeRegedit/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/slidoapp/MacOfficeRegedit/actions/workflows/lint.yml)
+[![Contributor-Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-fbab2c.svg)](CODE_OF_CONDUCT.md)
+[![Maintainer](https://img.shields.io/badge/Maintainer-Cisco-00bceb.svg)](https://opensource.cisco.com)
+
 Registry editor for "Microsoft Office for Mac".
 
 Office for Mac keeps its Windows-style `HKEY_CURRENT_USER` registry in a SQLite database at
@@ -12,7 +18,7 @@ with a UI modelled after Windows `regedit`.
 
 ## Installation
 
-1. Download the DMG of the [latest release](https://github.com/sli-do-playground/MacOfficeRegedit/releases/latest).
+1. Download the DMG of the [latest release](https://github.com/slidoapp/MacOfficeRegedit/releases/latest).
    Every merge to `main` publishes a new one.
 2. Open it and drag **MacOfficeRegedit** to **Applications**.
 3. Releases are not signed with a Developer ID yet, so macOS blocks the first launch. Click **Open Anyway** in
@@ -64,10 +70,12 @@ Tests:
 
 - `MacOfficeRegeditTests` – unit tests; they create temporary databases and never touch the live registry.
   `RealDatabaseTests` round-trips a real registry through `.reg` export/import when `REGEDIT_TEST_DB` points to a **copy**:
-  ```
+
+  ```sh
   cp ~/Library/Group\ Containers/UBF8T346G9.Office/MicrosoftRegistrationDB.reg /tmp/copy.reg
   TEST_RUNNER_REGEDIT_TEST_DB=/tmp/copy.reg xcodebuild -project src/MacOfficeRegedit.xcodeproj -scheme MacOfficeRegedit test
   ```
+
 - `MacOfficeRegeditUITests` – UI tests against a generated fixture database (require granting UI automation access).
 
 ### Screenshots
@@ -110,3 +118,27 @@ Releases are signed ad hoc unless these repository secrets are set, so macOS blo
 | `Store` | `RegistryStore` – UI state and operations; file watcher; running Office apps monitor |
 | `RegFile` | `.reg` file parser and serializer |
 | `Views` | SwiftUI views and value editors |
+
+## Roadmap
+
+See the [open issues](https://github.com/slidoapp/MacOfficeRegedit/issues) for a list of proposed features (and known
+issues).
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any
+contributions you make are **greatly appreciated**. For detailed contributing guidelines, please see
+[CONTRIBUTING.md](CONTRIBUTING.md). Report security issues as described in [SECURITY.md](SECURITY.md).
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+Microsoft and Office are trademarks of the Microsoft group of companies. This project is not affiliated with,
+sponsored or endorsed by Microsoft.
+
+## Contact
+
+See [MAINTAINERS.md](MAINTAINERS.md) for the project maintainers.
+
+Project Link: [https://github.com/slidoapp/MacOfficeRegedit](https://github.com/slidoapp/MacOfficeRegedit)

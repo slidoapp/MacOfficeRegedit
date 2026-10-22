@@ -1,3 +1,4 @@
+---
 name: Build DMG
 
 # Pull requests: test, build the DMG and attach it to the run as an artifact.
@@ -31,7 +32,7 @@ jobs:
       # Signing is optional and never used for pull requests; see "Releases" in README.md.
       CAN_SIGN: ${{ github.event_name != 'pull_request' && secrets.DEVELOPER_ID_CERTIFICATE_P12 != '' && secrets.DEVELOPER_ID_APPLICATION != '' }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -74,7 +75,7 @@ jobs:
         run: scripts/build-dmg.sh "$RUNNER_TEMP/dmg"
 
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: MacOfficeRegedit-${{ steps.dmg.outputs.version }}-${{ steps.dmg.outputs.build_number }}
           path: ${{ steps.dmg.outputs.dmg_path }}

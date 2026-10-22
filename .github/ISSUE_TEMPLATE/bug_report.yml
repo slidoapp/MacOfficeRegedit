@@ -1,0 +1,73 @@
+---
+name: Bug Report
+description: Report a bug to help us improve.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+        Never attach your Office registry (`MicrosoftRegistrationDB.reg`) or an
+        unredacted `.reg` export: it contains account details and other
+        personal settings.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: Please provide a description of the problem
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: Please describe what you expected would happen
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Affected Version
+      description: |
+        The release tag where this issue was encountered, shown in
+        MacOfficeRegedit ▸ About MacOfficeRegedit as "Version 1.0 (7)"
+      placeholder: v1.0-7
+    validations:
+      required: false
+  - type: input
+    id: macos
+    attributes:
+      label: macOS Version
+      placeholder: macOS 15.6
+    validations:
+      required: false
+  - type: input
+    id: office
+    attributes:
+      label: Microsoft Office Version
+      placeholder: Microsoft Word 16.100
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Please provide all steps to reproduce the behavior
+      placeholder: |
+        1. Open this key...
+        1. Edit this value...
+        1. See error...
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: By submitting this issue, you agree to the following
+      options:
+        - label: I have read the [contributing guidelines](https://github.com/slidoapp/MacOfficeRegedit/blob/main/CONTRIBUTING.md)
+          required: true
+        - label: I have verified this does not duplicate an existing issue
+          required: true
